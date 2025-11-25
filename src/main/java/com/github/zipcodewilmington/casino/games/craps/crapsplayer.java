@@ -13,8 +13,7 @@ public class CrapsPlayer implements PlayerInterface{
         this.casinoAccount = casinoAccount;
     }
 
-
-     public String getName() {
+    public String getName() {
         return name;
     }
 
