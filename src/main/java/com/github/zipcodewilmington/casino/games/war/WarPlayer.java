@@ -34,6 +34,25 @@ public class WarPlayer implements PlayerInterface{
         }
         return betAmount;
     }
+
+    public boolean tie() {
+        String input = "";
+        while (!input.equalsIgnoreCase("Y") && !input.equalsIgnoreCase("N")){
+            input = console.getStringInput(new StringBuilder()
+                    .append("It's a tie! Would you like to try your odds?")
+                    .append("\nIf the next round is a win, you win double your bet amount.")
+                    .append("\nIf the next round is a loss, you lose double your bet amount.")
+                    .append("\nEnter Y to accept or N to decline:")
+                    .toString());
+
+        }
+        if (input.equalsIgnoreCase("N")) {
+            console.println("You have chosen not to try your odds.");
+            return false;
+        }
+        console.println("You have chosen to try your odds.");
+        return true;
+    }
     
     public static boolean isDouble(String str) {
         if (str == null) {
