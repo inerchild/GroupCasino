@@ -7,7 +7,7 @@ import com.github.zipcodewilmington.utils.Card;
 
 public class WarGame implements GameInterface {
     
-    PlayerInterface player;
+    WarPlayer player;
     Deck deck;
 
         /**
@@ -15,7 +15,7 @@ public class WarGame implements GameInterface {
      * @param player the player to be removed from the game
      */
     public void add(PlayerInterface player) {
-        this.player = player;
+        this.player = (WarPlayer) player;
     }
 
     /**
@@ -34,6 +34,12 @@ public class WarGame implements GameInterface {
         double bet = player.play();
         deck = new Deck();
         deck.shuffle();
+        round(bet);
+        System.out.println("Thanks for playing War!");
+        System.out.println("Your account balance is: $" + this.player.getArcadeAccount().getAccountBalance());
+    }
+
+    public void round (double bet) {
         Card dealer = deck.drawCard();
         Card playerCard = deck.drawCard();
 
@@ -52,8 +58,9 @@ public class WarGame implements GameInterface {
             }
         } else {
             System.out.println("It's a tie!");
+            if (player.tie()){
+                round(bet * 2);
+            }
         }
-        System.out.println("Thanks for playing War!");
-        System.out.println("Your account balance is: $" + this.player.getArcadeAccount().getAccountBalance());
     }
 }
