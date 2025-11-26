@@ -27,10 +27,4 @@ public class Symbol {
     public String toString() {
         return name + " " + icon + " (" + multiplier + "x)";
     }
-
-    Symbol cherry = new Symbol("🍒", 3, "Cherry");
-    System.out.println(cherry.getIcon());
-    System.out.println(cherry.getMultiplier());
-    System.out.println(cherry);
-
 }
