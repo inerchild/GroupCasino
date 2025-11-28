@@ -25,6 +25,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testRoyalFlush() {
+
         List<Card> cards = Arrays.asList(
             new Card(Suit.SPADES, Rank.ACE),
             new Card(Suit.SPADES, Rank.KING),
@@ -38,6 +39,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testStraightFlush() {
+
         List<Card> cards = Arrays.asList(
             new Card(Suit.DIAMONDS, Rank.NINE),
             new Card(Suit.DIAMONDS, Rank.EIGHT),
@@ -51,6 +53,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testFourOfAKind() {
+
         List<Card> cards = Arrays.asList(
             new Card(Suit.SPADES, Rank.ACE),
             new Card(Suit.SPADES, Rank.ACE),
@@ -65,6 +68,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testFullHouse() {
+
         List<Card> cards = Arrays.asList(
             new Card(Suit.SPADES, Rank.KING),
             new Card(Suit.HEARTS, Rank.KING),
@@ -78,6 +82,7 @@ public class HandEvaluatorTest {
 
         @Test
     public void testFlush() {
+
         List<Card> cards = Arrays.asList(
             new Card(Suit.SPADES, Rank.ACE),
             new Card(Suit.SPADES, Rank.KING),
@@ -91,6 +96,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testStraight() {
+
         List<Card> cards = Arrays.asList(
             new Card(Suit.SPADES, Rank.ACE),
             new Card(Suit.HEARTS, Rank.KING),
@@ -104,6 +110,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testThreeOfAKind() {
+
         List<Card> cards = Arrays.asList(
             new Card(Suit.SPADES, Rank.QUEEN),
             new Card(Suit.HEARTS, Rank.QUEEN),
@@ -117,6 +124,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testTwoPair() {
+
         List<Card> cards = Arrays.asList(
             new Card(Suit.SPADES, Rank.KING),
             new Card(Suit.HEARTS, Rank.KING),
@@ -130,6 +138,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testPair() {
+
         List<Card> cards = Arrays.asList(
             new Card(Suit.SPADES, Rank.ACE),
             new Card(Suit.HEARTS, Rank.ACE),
@@ -143,6 +152,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testHighCard() {
+
         List<Card> cards = Arrays.asList(
             new Card(Suit.SPADES, Rank.ACE),
             new Card(Suit.HEARTS, Rank.KING),
@@ -156,6 +166,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testWheelStraight() {
+
         List<Card> cards = Arrays.asList(
             new Card(Suit.SPADES, Rank.ACE),
             new Card(Suit.HEARTS, Rank.TWO),
@@ -170,6 +181,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testKickerComparison() {
+
         List<Card> hand1 = Arrays.asList(
             new Card(Suit.SPADES, Rank.KING),
             new Card(Suit.HEARTS, Rank.KING),
@@ -194,6 +206,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testFlushBeatsStrait() {
+
         List<Card> flush = Arrays.asList(
             new Card(Suit.HEARTS, Rank.KING),
             new Card(Suit.HEARTS, Rank.JACK),
@@ -218,6 +231,7 @@ public class HandEvaluatorTest {
 
     @Test
     public void testInvalidInput() {
+        
         assertThrows(IllegalArgumentException.class, () -> {
             evaluator.evaluateHand(null);
         });

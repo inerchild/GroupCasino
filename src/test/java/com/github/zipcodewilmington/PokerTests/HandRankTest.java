@@ -74,6 +74,7 @@ public class HandRankTest {
 
     @Test
     public void testEquals() {
+        
         HandRank hand1 = new HandRank(HandType.FULL_HOUSE, Arrays.asList(13, 5), Collections.emptyList());
         HandRank hand2 = new HandRank(HandType.FULL_HOUSE, Arrays.asList(13, 5), Collections.emptyList());
         HandRank hand3 = new HandRank(HandType.FULL_HOUSE, Arrays.asList(13, 4), Collections.emptyList());
