@@ -1,9 +1,7 @@
 package com.github.zipcodewilmington.casino.games.slots;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import.java.util.ArrayList;
-import.java.util.List;
 
 public class SlotMachine {
     private List<Wheel> wheels;
@@ -62,7 +60,7 @@ public class SlotMachine {
         //Check for any matching symbols
         for (int i = 0; i < lastSpin.size() - 1; i++) {
             for (int j = i + 1; j < lastSpin.size(); j++) {
-                if (lastSpin.get(i).getName().equals(lastSpin.get(j).getname())) {
+                if (lastSpin.get(i).getName().equals(lastSpin.get(j).getName())) {
                     //Not counting Bomb or SkullOfDoom as wins
                     String name = lastSpin.get(i).getName();
                     if (!name.equals("Bomb") && !name.equals("SkullOfDoom")) {
@@ -85,9 +83,109 @@ public class SlotMachine {
         if (firstName.equals("Bomb") || firstName.equals("SkullOfDoom")) {
             return false;
         }
+        
+        for (Symbol symbol : lastSpin) {
+            if (!symbol.getName().equals(firstName)) {
+                return false;
+            }
         }
         return true;
+    }
+
+    //Checks if the spin contains a Bomb symbol
+    public boolean hasBomb() {
+        for (Symbol symbol : lastSpin) {
+            if (symbol.getName().equals("Bomb")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //Checks if the spin contains a SkullOfDoom symbol
+    public boolean hasSkullOfDoom() {
+        for (Symbol symbol : lastSpin) {
+            if (symbol.getName().equals("SkullOfDoom")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //Calculates the payout for the last spin
+    public double calculatePayout() {
+        if (lastSpin.isEmpty()) {
+            return 0.0;
+        }
+
+        //Checks for bombs - instant loss of bet
+        if (hasBomb()) {
+            return -currentBet;
+        }
+
+        //Checks for SkullOfDoom - GAME OVER easter egg
+        if (hasSkullOfDoom()) {
+            return 0.0; //Wont actually be reached
+        }
+
+        //Check for jackpot (all symbols match)
+        if (isJackpot()) {
+            int multiplier = lastSpin.get(0).getMultiplier();
+            return currentBet * multiplier * numberOfWheels;
+        }
+
+        //Checks for any matches
+        if (isWin()) {
+            //Find the highest multiplier among matching symbols
+            int highestMultiplier = 0;
+
+            for (int i = 0; i < lastSpin.size() - 1; i++) {
+                for (int j = i + 1; j < lastSpin.size(); j++) {
+                    if (lastSpin.get(i).getName().equals(lastSpin.get(j).getName())) {
+                        int multiplier = lastSpin.get(i).getMultiplier();
+                        if (multiplier > highestMultiplier) {
+                            highestMultiplier = multiplier;
+                        }    
+                    }
+                }
+            }
+            return currentBet * highestMultiplier;
+        }
+        //No win
+        return 0.0;
+    }
+
+    //Gets the current bet amount
+    public double getCurrentBet() {
+        return currentBet;
+    }
+
+    //Gets the number of wheels on this machine
+    public int getNumberOfWheels() {
+        return numberOfWheels;
+    }
+
+    //Gets all wheels
+    public List<Wheel> getWheels() {
+        return new ArrayList<>(wheels);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SlotMachine [").append(numberOfWheels).append(" wheels]\n");
+        sb.append("Current Bet: $").append(String.format("%.2f", currentBet)).append("\n");
+
+        if (!lastSpin.isEmpty()) {
+            sb.append("Last Spin: ");
+            for (Symbol s : lastSpin) {
+                sb.append(s.getIcon()).append(" ");
+            }
+        }
+    
+        return sb.toString();
+    }
 }
 
+
     
-}
