@@ -13,7 +13,7 @@ public class HandEvaluator {                                               // **
             throw new IllegalArgumentException("Must provide exactly 5 cards to evaluate");
         }
         List<Card> sortedCards = new ArrayList<>(cards);                                            // Sort cards by descending rank
-        sortedCards.sort((c1, c2) -> Integer.compare(
+        sortedCards.sort((c1, c2) -> Integer.compare(                         
             c2.getRank().getValue(),
             c1.getRank().getValue()
         ));
