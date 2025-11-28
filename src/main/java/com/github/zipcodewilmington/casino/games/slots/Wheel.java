@@ -23,7 +23,7 @@ public class Wheel {
     }
 
     public Symbol spin() {
-        int randomPosition = random.nextInt(reelStrip.size())
+        int randomPosition = random.nextInt(reelStrip.size());
         currentSymbol = reelStrip.get(randomPosition);
         return currentSymbol;
     }
