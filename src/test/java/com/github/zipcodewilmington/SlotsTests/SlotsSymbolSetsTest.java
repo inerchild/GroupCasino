@@ -27,12 +27,12 @@ public class SlotsSymbolSetsTest {
         assertNotNull(s);
         assertNotNull(s.getIcon());
         assertNotNull(s.getName());
-        assertTrue(s.getMultiplier() > 0);
+        assertTrue(s.getMultiplier() >= 0);
     }
 
     @Test
     public void testDistribution() {
-        int[] counts = new int[8]; 
+        int[] counts = new int[10]; 
 
         for (int i = 0; i <1000; i++) {
             Symbol s = vegas.getRandomSymbol();
@@ -47,7 +47,7 @@ public class SlotsSymbolSetsTest {
                 case "Seven": counts[6]++; break;
                 case "Diamond": counts[7]++; break;
                 case "Bomb": counts[8]++; break;
-                case "DeathSkull": counts[9]++; break;
+                case "SkullOfDoom": counts[9]++; break;
 
             }
         }
@@ -55,11 +55,11 @@ public class SlotsSymbolSetsTest {
         assertTrue(counts[0] >= 150 && counts[0] <= 250,
             "Cherry should appear ~20% of time, got: " + counts[0]);
         
-        assertTrue(counts[7] >- 20 && counts[7] <= 80,
+        assertTrue(counts[7] >= 20 && counts[7] <= 80,
             "Diamond should appear ~5% of time, got: " + counts[7]);
 
         assertTrue(counts[8] >= 20 && counts[8] <= 60, "Bomb should appear ~4%");
-        assertTrue(counts[9] >= 5 && counts[9] <= 40, "DeathSkull should appear ~2%");
+        assertTrue(counts[9] >= 5 && counts[9] <= 40, "SkullOfDoom should appear ~2%");
 
         System.out.println("Cherry: " + counts[0] + " (expected ~170)");
         System.out.println("Lemon: " + counts[1] + " (expected ~170)");
@@ -70,7 +70,7 @@ public class SlotsSymbolSetsTest {
         System.out.println("Seven: " + counts[6] + " (expected ~100)");
         System.out.println("Diamond: " + counts[7] + " (expected ~50)");
         System.out.println("💣 Bomb: " + counts[8] + " (expected ~40)");
-        System.out.println("☠️ DeathSkull: " + counts[9] + " (expected ~20");
+        System.out.println("☠️ SkullOfDoom: " + counts[9] + " (expected ~20");
     }
 
     @Test
@@ -88,7 +88,7 @@ public class SlotsSymbolSetsTest {
             if (s.getName().equals("Bomb")) {
                 foundBomb = true;
                 assertEquals(0, s.getMultiplier(), "Bomb should have 0 multiplier");
-                asserEquals("💣", s.getIcon());
+                assertEquals("💣", s.getIcon());
                 System.out.println("💣 Found Bomb symbol!");
                 break;
             }
@@ -97,21 +97,21 @@ public class SlotsSymbolSetsTest {
     }
 
     @Test
-    public void testDeathSkullSymbolExists() {
+    public void testSkullOfDoomSymbolExists() {
         SymbolSet vegas = SymbolSet.createVegaSymbolSet();
 
-        boolean foundDeathSkull = false;
+        boolean foundSkullOfDoom = false;
         for (int i = 0; i < 2000; i++) {
             Symbol s = vegas.getRandomSymbol();
-            if (s.getName().equals("DeathSkull")) {
-                foundDeathSkull = true;
-                asserEquals(0, s.getMultiplier(), "DeathSkull should have 0 multiplier");
+            if (s.getName().equals("SkullOfDoom")) {
+                foundSkullOfDoom = true;
+                assertEquals(0, s.getMultiplier(), "SkullOfDoom should have 0 multiplier");
                 assertEquals("☠️", s.getIcon());
-                System.out.println("☠️ Found DeathSkull easter egg after " + i + " spins!");
+                System.out.println("☠️ Found SkullOfDoom easter egg after " + i + " spins!");
                 break;
             }
         }
-        assertTrue(foundDeathSkull, "DeathSkull should appear in spins (rare but possible)");
+        assertTrue(foundSkullOfDoom, "SkullOfDoom should appear in spins (rare but possible)");
     }
     
 }
