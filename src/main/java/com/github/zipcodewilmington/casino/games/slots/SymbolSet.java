@@ -56,16 +56,20 @@ public class SymbolSet {
         symbols.add(new Symbol("⭐", 8, "Star"));
         symbols.add(new Symbol("7️⃣", 10, "Seven"));
         symbols.add(new Symbol("💎", 20, "Diamond"));
+        symbols.add(new Symbol("💣", 0, "Bomb"));  // Instant loss
+        symbols.add(new Symbol("☠️", 0, "SkullOfDoom")); 
 
         ArrayList<Integer> distribution = new ArrayList<>();
-        distribution.add(20); // Cherry 20%
-        distribution.add(20); // Lemon 20%
+        distribution.add(17); // Cherry 17%
+        distribution.add(17); // Lemon 17%
         distribution.add(15); // Orange 15%
         distribution.add(12); // Grape 12%
         distribution.add(10); // Bell 10%
         distribution.add(8); // Star 8%
         distribution.add(10); // Seven 10%
         distribution.add(5); // Diamond 5%
+        distribution.add(4); // Bomb 4%
+        distribution.add(2); // DeathSkull 2%
 
         return new SymbolSet(symbols, distribution);
     }
