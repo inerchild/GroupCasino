@@ -1,0 +1,13 @@
+[ {
+  "accountName" : "Test",
+  "accountPassword" : "Test",
+  "accountBalance" : 1000.0
+}, {
+  "accountName" : "Alice",
+  "accountPassword" : "1234",
+  "accountBalance" : 500.0
+}, {
+  "accountName" : "Kris",
+  "accountPassword" : "kristopher",
+  "accountBalance" : 1000.0
+} ]
