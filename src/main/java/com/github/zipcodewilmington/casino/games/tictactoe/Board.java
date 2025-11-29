@@ -1,6 +1,6 @@
 package com.github.zipcodewilmington.casino.games.tictactoe;
 
-public  class Board {
+public class Board {
     // NESTED ARRAY: 3x3 grid for tic tac toe cells
     private char[][] cells;
     private static final int SIZE = 3;
@@ -52,7 +52,7 @@ public  class Board {
     }
     
     public boolean isCellAvailable(int row, int col) {
-        if (row < 0 || row >= SIZE || col < 0 || col >= SIZE) {
+        if (cells[row][col] == 'X' || cells[row][col] == 'O') {
             return false;
         }
         return true;

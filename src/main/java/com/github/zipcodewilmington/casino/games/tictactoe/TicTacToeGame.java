@@ -1,8 +1,6 @@
-
-
-
 package com.github.zipcodewilmington.casino.games.tictactoe;
 
+import com.github.zipcodewilmington.casino.CasinoAccount;
 import com.github.zipcodewilmington.casino.GameInterface;
 import com.github.zipcodewilmington.casino.PlayerInterface;
 import java.util.ArrayList;
@@ -31,6 +29,7 @@ public class TicTacToeGame implements GameInterface {
     public void add(PlayerInterface player) {
         if (players.size() < 2) {
             players.add(player);
+            players.add(new ComputerPlayer(new CasinoAccount("ComputerPlayer", "Test")));
             System.out.println("✓ " + player.getArcadeAccount().getAccountName() + " joined the game!");
         } else {
             System.out.println("✗ Game is full! Maximum 2 players.");
@@ -89,7 +88,7 @@ public class TicTacToeGame implements GameInterface {
             int row = move[0];
             int col = move[1];
             
-            if (board.placeMove(row, col, currentPlayer.getSymbol())) {
+            if (board.isCellAvailable(row, col) && board.placeMove(row, col, currentPlayer.getSymbol())) {
                 if (board.checkWin(currentPlayer.getSymbol())) {
                     board.display();
                     displayWinner(currentPlayer);
