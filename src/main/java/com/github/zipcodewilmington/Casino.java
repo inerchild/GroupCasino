@@ -45,6 +45,8 @@ public class Casino implements Runnable {
                     accountPassword = console.getStringInput("Enter your account password:");
                     CasinoAccount newAccount = casinoAccountManager.createAccount(accountName, accountPassword);
                     casinoAccountManager.registerAccount(newAccount);
+                } else {
+                    console.println("Invalid Command.");
                 }
             } else {
                 arcadeDashBoardInput = getArcadeDashboardInput();
@@ -67,23 +69,22 @@ public class Casino implements Runnable {
                         } else if (gameSelectionInput.equals("TICTACTOE")) {
                             play(new TicTacToeGame(), new HumanPlayer(currentAccount));
                         } else {
-                            // TODO - implement better exception handling
                             String errorMessage = "[ %s ] is an invalid game selection";
-                            throw new RuntimeException(String.format(errorMessage, gameSelectionInput));
+                            console.println(String.format(errorMessage, gameSelectionInput));
                         }
-                    } else {
-                        System.out.println("Invalid game");
                     }
                 } else if ("logout".equals(arcadeDashBoardInput)) {
                     currentAccount = null;
                 } else if ("deposit".equals(arcadeDashBoardInput)) {
                     double deposit = getMoneyAmount();
                     depositAccount(currentAccount, deposit);
-                    console.print(currentAccount.getAccountName() + " now has " + currentAccount.getAccountBalance() + " credits\n");
+                    console.println(currentAccount.getAccountName() + " now has " + currentAccount.getAccountBalance() + " credits");
                 } else if ("withdraw".equals(arcadeDashBoardInput)) {
                     double withdraw = getMoneyAmount();
                     withdrawAccount(currentAccount, withdraw);
-                    console.print(currentAccount.getAccountName() + " now has " + currentAccount.getAccountBalance() + " credits\n");
+                    console.println(currentAccount.getAccountName() + " now has " + currentAccount.getAccountBalance() + " credits");
+                } else {
+                    console.println("Invalid Command.");
                 }
             }
             casinoAccountManager.saveAccounts("accounts.json");
