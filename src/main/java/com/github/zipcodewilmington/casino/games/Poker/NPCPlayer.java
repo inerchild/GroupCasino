@@ -136,7 +136,6 @@ public class NPCPlayer extends PokerPlayer {
     }
 
     public double calculateRaiseAmount(double currentBet, double potSize) {         // calculates how much to raise based on personality type
-        double handStrength = evaluateHandStrength();
         double raiseAmount;
 
         switch (personality) {

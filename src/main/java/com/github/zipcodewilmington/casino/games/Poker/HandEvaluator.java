@@ -1,7 +1,6 @@
 package com.github.zipcodewilmington.casino.games.Poker;
 
 import com.github.zipcodewilmington.utils.Card;
-import com.github.zipcodewilmington.utils.Rank;
 import com.github.zipcodewilmington.utils.Suit;
 
 import java.util.*;
