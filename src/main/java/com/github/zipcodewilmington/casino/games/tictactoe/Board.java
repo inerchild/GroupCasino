@@ -52,7 +52,7 @@ public class Board {
     }
     
     public boolean isCellAvailable(int row, int col) {
-        if (row < 0 || row >= SIZE || col < 0 || col >= SIZE) {
+        if (cells[row][col] == 'X' || cells[row][col] == 'O') {
             return false;
         }
         return true;

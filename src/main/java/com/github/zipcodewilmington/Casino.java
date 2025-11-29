@@ -12,6 +12,8 @@ import com.github.zipcodewilmington.casino.games.craps.CrapsGame;
 import com.github.zipcodewilmington.casino.games.craps.CrapsPlayer;
 import com.github.zipcodewilmington.casino.games.war.WarGame;
 import com.github.zipcodewilmington.casino.games.war.WarPlayer;
+import com.github.zipcodewilmington.casino.games.tictactoe.HumanPlayer;
+import com.github.zipcodewilmington.casino.games.tictactoe.TicTacToeGame;
 import com.github.zipcodewilmington.utils.AnsiColor;
 import com.github.zipcodewilmington.utils.IOConsole;
 
@@ -47,6 +49,8 @@ public class Casino implements Runnable {
                         play(crapsGame, crapsPlayer);
                     } else if (gameSelectionInput.equals("WAR")) {
                         play(new WarGame(), new WarPlayer(casinoAccount));
+                    } else if (gameSelectionInput.equals("TICTACTOE")) {
+                        play(new TicTacToeGame(), new HumanPlayer(casinoAccount));
                     } else {
                         // TODO - implement better exception handling
                         String errorMessage = "[ %s ] is an invalid game selection";
@@ -79,7 +83,7 @@ public class Casino implements Runnable {
         return console.getStringInput(new StringBuilder()
                 .append("Welcome to the Game Selection Dashboard!")
                 .append("\nFrom here, you can select any of the following options:")
-                .append("\n\t[ SLOTS ], [ NUMBERGUESS ], [ WAR ], [ CRAPS ]")
+                .append("\n\t[ SLOTS ], [ NUMBERGUESS ], [ WAR ], [ CRAPS ], [TICTACTOE]")
                 .toString());
     }
 
