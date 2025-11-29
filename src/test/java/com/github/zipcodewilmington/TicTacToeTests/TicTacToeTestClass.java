@@ -1,5 +1,4 @@
-
-package com.github.zipcodewilmington;
+package com.github.zipcodewilmington.TicTacToeTests;
 
 import com.github.zipcodewilmington.casino.CasinoAccount;
 import com.github.zipcodewilmington.casino.games.tictactoe.HumanPlayer;
@@ -22,4 +21,3 @@ class TicTacToeTest {
         game.run();
     }
 }
-
