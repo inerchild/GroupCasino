@@ -7,15 +7,13 @@ import com.github.zipcodewilmington.casino.PlayerInterface;
 import com.github.zipcodewilmington.casino.games.numberguess.NumberGuessGame;
 import com.github.zipcodewilmington.casino.games.numberguess.NumberGuessPlayer;
 import com.github.zipcodewilmington.casino.games.tictactoe.TicTacToeGame;
-import com.github.zipcodewilmington.casino.games.tictactoe.TicTacToePlayer;
+import com.github.zipcodewilmington.casino.games.tictactoe.HumanPlayer;
 import com.github.zipcodewilmington.casino.games.slots.SlotsGame;
 import com.github.zipcodewilmington.casino.games.slots.SlotsPlayer;
 import com.github.zipcodewilmington.casino.games.craps.CrapsGame;
 import com.github.zipcodewilmington.casino.games.craps.CrapsPlayer;
 import com.github.zipcodewilmington.casino.games.war.WarGame;
 import com.github.zipcodewilmington.casino.games.war.WarPlayer;
-import com.github.zipcodewilmington.casino.games.tictactoe.HumanPlayer;
-import com.github.zipcodewilmington.casino.games.tictactoe.TicTacToeGame;
 import com.github.zipcodewilmington.utils.AnsiColor;
 import com.github.zipcodewilmington.utils.IOConsole;
 
