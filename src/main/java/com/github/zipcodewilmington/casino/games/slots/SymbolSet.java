@@ -87,9 +87,15 @@ public class SymbolSet {
     symbols.add(new Symbol("☠️", 0, "Davy Jones"));
 
     ArrayList<Integer> distribution = new ArrayList<>();
-    distribution.add(17); distribution.add(17); distribution.add(15);
-    distribution.add(12); distribution.add(10); distribution.add(8);
-    distribution.add(10); distribution.add(5); distribution.add(4);
+    distribution.add(17); 
+    distribution.add(17); 
+    distribution.add(15);
+    distribution.add(12); 
+    distribution.add(10); 
+    distribution.add(8);
+    distribution.add(10); 
+    distribution.add(5); 
+    distribution.add(4);
     distribution.add(2);
 
     return new SymbolSet(symbols, distribution);
@@ -109,9 +115,15 @@ public static SymbolSet createSpaceSymbolSet() {
     symbols.add(new Symbol("🕳️", 0, "Black Hole"));
 
     ArrayList<Integer> distribution = new ArrayList<>();
-    distribution.add(17); distribution.add(17); distribution.add(15);
-    distribution.add(12); distribution.add(10); distribution.add(8);
-    distribution.add(10); distribution.add(5); distribution.add(4);
+    distribution.add(17); 
+    distribution.add(17); 
+    distribution.add(15);
+    distribution.add(12); 
+    distribution.add(10); 
+    distribution.add(8);
+    distribution.add(10); 
+    distribution.add(5); 
+    distribution.add(4);
     distribution.add(2);
 
     return new SymbolSet(symbols, distribution);

@@ -10,4 +10,8 @@
   "accountName" : "Kris",
   "accountPassword" : "kristopher",
   "accountBalance" : 1000.0
+}, {
+  "accountName" : "Ben",
+  "accountPassword" : "123",
+  "accountBalance" : 980.0
 } ]
