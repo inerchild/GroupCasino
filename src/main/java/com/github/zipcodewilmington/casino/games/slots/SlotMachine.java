@@ -92,20 +92,22 @@ public class SlotMachine {
         return true;
     }
 
-    //Checks if the spin contains a Bomb symbol
+    //Checks if the spin contains a Bomb symbol (or theme equivalent)
     public boolean hasBomb() {
         for (Symbol symbol : lastSpin) {
-            if (symbol.getName().equals("Bomb")) {
+            String name = symbol.getName();
+            if (name.equals("Bomb") || name.equals("Kraken") || name.equals("Asteroid")) {
                 return true;
             }
         }
         return false;
     }
 
-    //Checks if the spin contains a SkullOfDoom symbol
+    //Checks if the spin contains a SkullOfDoom symbol (or theme equivalent)
     public boolean hasSkullOfDoom() {
         for (Symbol symbol : lastSpin) {
-            if (symbol.getName().equals("SkullOfDoom")) {
+            String name = symbol.getName();
+            if (name.equals("SkullOfDoom") || name.equals("Davy Jones") || name.equals("Black Hole")) {
                 return true;
             }
         }
@@ -188,24 +190,63 @@ public class SlotMachine {
     }
     
     /**
-     * 💀 SKULL OF DOOM EASTER EGG 💀
-     * Triggers dramatic game ending when SkullOfDoom appears
+     * 💀 ULTIMATE DOOM EASTER EGG 💀
+     * Triggers dramatic game ending when ultimate doom symbol appears
      * This will close the ENTIRE program!
      */
     private void triggerSkullOfDoom() {
+        // Determine which symbol triggered it
+        String doomSymbol = "";
+        for (Symbol symbol : lastSpin) {
+            String name = symbol.getName();
+            if (name.equals("SkullOfDoom") || name.equals("Davy Jones") || name.equals("Black Hole")) {
+                doomSymbol = name;
+                break;
+            }
+        }
+        
         System.out.println("\n\n\n");
         System.out.println("════════════════════════════════════════════════════");
-        System.out.println("☠️ ☠️ ☠️ ☠️ ☠️  SKULL OF DOOM  ☠️ ☠️ ☠️ ☠️ ☠️");
-        System.out.println("════════════════════════════════════════════════════");
-        System.out.println();
-        System.out.println("    💀 You have awakened the ANCIENT CURSE! 💀");
-        System.out.println();
-        System.out.println("  The spirits of defeated gamblers rise from the void...");
-        System.out.println("  Your soul is now bound to the casino... FOREVER!");
-        System.out.println();
-        System.out.println("  🔥 The slot machine bursts into flames! 🔥");
-        System.out.println("  💥 The casino crumbles around you! 💥");
-        System.out.println("  🌑 Darkness consumes everything... 🌑");
+        
+        // Theme-specific messages
+        if (doomSymbol.equals("Davy Jones")) {
+            System.out.println("☠️ ☠️ ☠️ ☠️ ☠️  DAVY JONES' LOCKER  ☠️ ☠️ ☠️ ☠️ ☠️");
+            System.out.println("════════════════════════════════════════════════════");
+            System.out.println();
+            System.out.println("    🏴‍☠️ You've been claimed by DAVY JONES! 🏴‍☠️");
+            System.out.println();
+            System.out.println("  The cursed pirate drags you to the depths...");
+            System.out.println("  Your soul is now bound to the ocean... FOREVER!");
+            System.out.println();
+            System.out.println("  🌊 The waves crash over the ship! 🌊");
+            System.out.println("  ⚓ Your ship sinks into the abyss! ⚓");
+            System.out.println("  🦈 The sharks circle closer... 🦈");
+        } else if (doomSymbol.equals("Black Hole")) {
+            System.out.println("🕳️ 🕳️ 🕳️ 🕳️ 🕳️  BLACK HOLE  🕳️ 🕳️ 🕳️ 🕳️ 🕳️");
+            System.out.println("════════════════════════════════════════════════════");
+            System.out.println();
+            System.out.println("    🌌 You've been pulled into a BLACK HOLE! 🌌");
+            System.out.println();
+            System.out.println("  The gravitational force is inescapable...");
+            System.out.println("  Space and time collapse around you... FOREVER!");
+            System.out.println();
+            System.out.println("  🚀 Your ship is torn apart! 🚀");
+            System.out.println("  ⭐ Stars are crushed to dust! ⭐");
+            System.out.println("  🌠 Reality itself fades away... 🌠");
+        } else {
+            System.out.println("☠️ ☠️ ☠️ ☠️ ☠️  SKULL OF DOOM  ☠️ ☠️ ☠️ ☠️ ☠️");
+            System.out.println("════════════════════════════════════════════════════");
+            System.out.println();
+            System.out.println("    💀 You have awakened the ANCIENT CURSE! 💀");
+            System.out.println();
+            System.out.println("  The spirits of defeated gamblers rise from the void...");
+            System.out.println("  Your soul is now bound to the casino... FOREVER!");
+            System.out.println();
+            System.out.println("  🔥 The slot machine bursts into flames! 🔥");
+            System.out.println("  💥 The casino crumbles around you! 💥");
+            System.out.println("  🌑 Darkness consumes everything... 🌑");
+        }
+        
         System.out.println();
         System.out.println("════════════════════════════════════════════════════");
         System.out.println("           💀 GAME OVER - NO ESCAPE 💀");
@@ -214,7 +255,7 @@ public class SlotMachine {
         
         // Dramatic countdown
         try {
-            System.out.print("Casino closing in 3...");
+            System.out.print("Closing in 3...");
             Thread.sleep(1000);
             System.out.print(" 2...");
             Thread.sleep(1000);
@@ -226,7 +267,13 @@ public class SlotMachine {
             Thread.currentThread().interrupt();
         }
         
-        System.out.println("☠️☠️☠️ THE CURSE CLAIMS ANOTHER VICTIM ☠️☠️☠️\n");
+        if (doomSymbol.equals("Davy Jones")) {
+            System.out.println("🏴‍☠️ DAVY JONES CLAIMS ANOTHER SOUL 🏴‍☠️\n");
+        } else if (doomSymbol.equals("Black Hole")) {
+            System.out.println("🕳️ CONSUMED BY THE VOID 🕳️\n");
+        } else {
+            System.out.println("☠️☠️☠️ THE CURSE CLAIMS ANOTHER VICTIM ☠️☠️☠️\n");
+        }
         
         // SHUTDOWN THE ENTIRE PROGRAM
         System.exit(0);
