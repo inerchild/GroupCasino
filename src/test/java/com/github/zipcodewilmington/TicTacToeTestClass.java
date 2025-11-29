@@ -1,13 +1,11 @@
 
 package com.github.zipcodewilmington;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
 import com.github.zipcodewilmington.casino.CasinoAccount;
+import com.github.zipcodewilmington.casino.games.tictactoe.HumanPlayer;
+import com.github.zipcodewilmington.casino.games.tictactoe.ComputerPlayer;
+import com.github.zipcodewilmington.casino.games.tictactoe.TicTacToeGame;
 
-import java.util.Random; 
 
 class TicTacToeTest {
     public static void main(String[] args) {

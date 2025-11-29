@@ -4,7 +4,7 @@ package com.github.zipcodewilmington.casino.games.tictactoe;
 import java.util.Scanner;
 import com.github.zipcodewilmington.casino.CasinoAccount;
 
-class HumanPlayer extends TicTacToePlayer {
+public class HumanPlayer extends TicTacToePlayer {
     private Scanner scanner;
     
     public HumanPlayer(CasinoAccount account) {

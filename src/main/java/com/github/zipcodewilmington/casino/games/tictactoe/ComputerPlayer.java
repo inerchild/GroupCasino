@@ -3,7 +3,7 @@ package com.github.zipcodewilmington.casino.games.tictactoe;
 import java.util.Random;
 import com.github.zipcodewilmington.casino.CasinoAccount;
 
-class ComputerPlayer extends TicTacToePlayer {
+public class ComputerPlayer extends TicTacToePlayer {
     private Random random;
     
     public ComputerPlayer(CasinoAccount account) {
