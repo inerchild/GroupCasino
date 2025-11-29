@@ -1,6 +1,11 @@
+
+
 package com.github.zipcodewilmington.casino.games.tictactoe;
 
 import java.util.Scanner;
+
+
+
 
 // Main class to run the game
 public class TicTacToeMain {
@@ -156,11 +161,11 @@ class Game {
     }
     
     private void initializePlayers() {
-        System.out.print("Enter Player 1 name: ");
+        System.out.print("Toni: ");
         String name1 = scanner.nextLine();
         player1 = new Player(name1, 'X');
         
-        System.out.print("Enter Player 2 name: ");
+        System.out.print("Terminal: ");
         String name2 = scanner.nextLine();
         player2 = new Player(name2, 'O');
         
