@@ -54,12 +54,12 @@ public class CasinoAccountManager {
         ObjectMapper mapper = new ObjectMapper();
         File jsonFile = new File(filename);
         try {
-            List<CasinoAccount> accountsFromFile = mapper.readValue(
+            List<CasinoAccount> accounts = mapper.readValue(
                     jsonFile,
                     new TypeReference<List<CasinoAccount>>() {}
             );
 
-            casinoAccounts.addAll(accountsFromFile);
+            casinoAccounts.addAll(accounts);
         } catch (IOException e) {
             System.err.println("Failed to load accounts from JSON file: " + e.getMessage());
             e.printStackTrace();
