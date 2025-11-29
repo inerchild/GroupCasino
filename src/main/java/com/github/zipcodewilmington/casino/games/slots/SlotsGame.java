@@ -8,50 +8,52 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-//Main Slots game that implements GameInterface
-//Handles the game loop and player interactions
+/**
+ * Main Slots game that implements GameInterface
+ * Handles the game loop and player interactions
+ */
 public class SlotsGame implements GameInterface {
     private List<PlayerInterface> players;
     private SlotMachine slotMachine;
     private Scanner scanner;
     private boolean isRunning;
-
+    
     public SlotsGame() {
         this.players = new ArrayList<>();
         this.slotMachine = new SlotMachine(SymbolSet.createVegaSymbolSet());
         this.scanner = new Scanner(System.in);
         this.isRunning = false;
     }
-
+    
     @Override
     public void add(PlayerInterface player) {
         players.add(player);
-        //If it's a SlotsPlayer, give them access to the slot machine
+        // If it's a SlotsPlayer, give them access to the slot machine
         if (player instanceof SlotsPlayer) {
             ((SlotsPlayer) player).setSlotMachine(slotMachine);
         }
     }
-
+    
     @Override
     public void remove(PlayerInterface player) {
         players.remove(player);
     }
-
+    
     @Override
     public void run() {
         if (players.isEmpty()) {
             System.out.println("No players in the game!");
             return;
         }
-
-        //Slots is single-player, only use the first player
+        
+        // Slots is a single-player game - only use the first player
         PlayerInterface player = players.get(0);
-
+        
         isRunning = true;
         displayWelcome();
         playWithPlayer(player);
     }
-
+    
     private void displayWelcome() {
         System.out.println("\n╔═══════════════════════════════════════════════╗");
         System.out.println("║          🎰 WELCOME TO VEGAS SLOTS 🎰         ║");
@@ -60,16 +62,22 @@ public class SlotsGame implements GameInterface {
         System.out.println("💣 Watch out for BOMBS - they lose your bet!");
         System.out.println("☠️  BEWARE: The Skull of Doom lurks in the shadows...\n");
     }
-
+    
     private void playWithPlayer(PlayerInterface player) {
         CasinoAccount account = player.getArcadeAccount();
-
-        System.out.println("\n" + account.getAccountName() + "'s turn!");
-        System.out.println("Current Balance: $" + String.format("%.2f", account.getAccountBalance()));
-
+        
+        // If account is null (no-arg constructor was used), prompt for account
+        if (account == null) {
+            System.out.println("Error: No account found. Please create an account first.");
+            return;
+        }
+        
+        System.out.println("\n " + account.getAccountName() + "'s turn!");
+        System.out.println("💰 Current Balance: $" + String.format("%.2f", account.getAccountBalance()));
+        
         while (isRunning) {
             System.out.println("\n───────────────────────────────────────────");
-            System.out.println("Balance: $" + String.format("%.2f", account.getAccountBalance()));
+            System.out.println("💰 Balance: $" + String.format("%.2f", account.getAccountBalance()));
             System.out.println("───────────────────────────────────────────");
             System.out.println("1. Spin ($10 bet)");
             System.out.println("2. Spin ($25 bet)");
@@ -78,9 +86,9 @@ public class SlotsGame implements GameInterface {
             System.out.println("5. View paytable");
             System.out.println("6. Exit game");
             System.out.print("\nChoice: ");
-
+            
             String choice = scanner.nextLine().trim();
-
+            
             switch (choice) {
                 case "1":
                     spinWithBet(account, 10.0);
@@ -95,7 +103,7 @@ public class SlotsGame implements GameInterface {
                     customBet(account);
                     break;
                 case "5":
-                    displayPayTable();
+                    displayPaytable();
                     break;
                 case "6":
                     System.out.println("\n👋 Thanks for playing! Final balance: $" 
@@ -104,80 +112,80 @@ public class SlotsGame implements GameInterface {
                 default:
                     System.out.println("Invalid choice. Try again.");
             }
-
-            //Checks if player is broke
+            
+            // Check if player is broke
             if (account.getAccountBalance() <= 0) {
-                System.out.println("\nYou're out of money! Game over.");
+                System.out.println("\n💸 You're out of money! Game over.");
                 return;
             }
         }
     }
-
+    
     private void spinWithBet(CasinoAccount account, double betAmount) {
         if (account.getAccountBalance() < betAmount) {
             System.out.println("\nInsufficient funds! You need $" + betAmount);
             return;
         }
-
-        //Deduct bet
+        
+        // Deduct bet
         account.setAccountBalance(account.getAccountBalance() - betAmount);
         slotMachine.placeBet(betAmount);
-
-        //Spin animation
-        System.out.println("\n Spinning...");
+        
+        // Spin animation
+        System.out.println("\n🎰 Spinning...");
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
-        //Spin the machine
+        
+        // Spin the machine
         List<Symbol> result = slotMachine.spin();
-
-        //Display the result
+        
+        // Display result
         System.out.println("\n┌─────┬─────┬─────┐");
         System.out.print("│  " + result.get(0).getIcon() + "  │  " 
             + result.get(1).getIcon() + "  │  " + result.get(2).getIcon() + "  │");
         System.out.println("\n└─────┴─────┴─────┘");
-
-        //Calculates payout
+        
+        // Calculate payout (this might trigger SkullOfDoom!)
         double payout = slotMachine.calculatePayout();
-
-        //Handles results
+        
+        // Handle results
         if (slotMachine.hasBomb()) {
             System.out.println("\n💥 BOOM! You hit a BOMB!");
-            System.out.println("Lost your bet of $" + String.format("%.2f", betAmount));
+            System.out.println("💸 Lost your bet of $" + String.format("%.2f", betAmount));
         } else if (slotMachine.isJackpot()) {
             System.out.println("\n🎉🎉🎉 JACKPOT! 🎉🎉🎉");
             System.out.println("💰 Triple " + result.get(0).getName() + "!");
-            System.out.println("You won: $" + String.format("%.2f", payout));
+            System.out.println("💵 You won: $" + String.format("%.2f", payout));
             account.setAccountBalance(account.getAccountBalance() + betAmount + payout);
         } else if (slotMachine.isWin()) {
             System.out.println("\n✨ Winner! ✨");
-            System.out.println("You won: $" + String.format("%.2f", payout));
+            System.out.println("💵 You won: $" + String.format("%.2f", payout));
             account.setAccountBalance(account.getAccountBalance() + betAmount + payout);
         } else {
             System.out.println("\nNo match. Better luck next time!");
         }
-
-        System.out.println("New Balance: $" + String.format("%.2f", account.getAccountBalance()));
+        
+        System.out.println("💰 New Balance: $" + String.format("%.2f", account.getAccountBalance()));
     }
-
+    
     private void customBet(CasinoAccount account) {
         System.out.print("Enter bet amount: $");
         try {
             double betAmount = Double.parseDouble(scanner.nextLine().trim());
             if (betAmount <= 0) {
-            System.out.println("Bet must be positive!");
-            return;
-        }
-        spinWithBet(account, betAmount); 
+                System.out.println("❌ Bet must be positive!");
+                return;
+            }
+            spinWithBet(account, betAmount);
         } catch (NumberFormatException e) {
-        System.out.println("Invalid amount!");
+            System.out.println("❌ Invalid amount!");
         }
     }
-
-    private void displayPayTable() {
+    
+    private void displayPaytable() {
         System.out.println("\n╔═══════════════════════════════════════════════╗");
         System.out.println("║              💎 PAYTABLE 💎                   ║");
         System.out.println("╠═══════════════════════════════════════════════╣");
@@ -194,16 +202,22 @@ public class SlotsGame implements GameInterface {
         System.out.println("║ 💣 Bomb       │    0x      │ LOSE YOUR BET!   ║");
         System.out.println("║ ☠️  Skull     │   ???      │ [REDACTED]       ║");
         System.out.println("╚═══════════════════════════════════════════════╝");
-        System.out.println("\nMatch 2 or 3 symbols to win!");
-        System.out.println("Jackpot (3 match) = bet x multiplier x 3\n");
+        System.out.println("\n🎰 Match 2 or 3 symbols to win!");
+        System.out.println("💰 Jackpot (3 match) = bet × multiplier × 3\n");
     }
-
-    //Gets the slot machine being used
+    
+    /**
+     * Gets the slot machine being used
+     * @return the slot machine
+     */
     public SlotMachine getSlotMachine() {
         return slotMachine;
     }
-
-    //Get player in the game
+    
+    /**
+     * Gets all players in the game
+     * @return list of players
+     */
     public List<PlayerInterface> getPlayers() {
         return new ArrayList<>(players);
     }

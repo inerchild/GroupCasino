@@ -31,7 +31,7 @@ public class SlotsPlayer  implements PlayerInterface{
     }
 
     //Sets the slot machine for this player
-    public void setSlotsMachine(SlotMachine slotMachine) {
+    public void setSlotMachine(SlotMachine slotMachine) {
         this.slotMachine = slotMachine;
     }
-}
+} 
