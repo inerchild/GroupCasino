@@ -12,7 +12,7 @@ import com.github.zipcodewilmington.casino.PlayerInterface;
  * All players must have reference to the `ArcadeAccount` used to log into the `Arcade` system.
  * All players are capable of `play`ing a game.
  */
-abstract class TicTacToePlayer implements PlayerInterface {
+public abstract class TicTacToePlayer implements PlayerInterface {
     protected CasinoAccount account;
     protected char symbol;
     
