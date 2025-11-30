@@ -15,8 +15,17 @@ public class BlackjackDealer {
         return hand;
     }
 
+    public int getHandValue() {
+        return hand.getValue();
+    }
+
     public void receiveCard(Card card) {
         hand.addCard(card);
+    }
+
+    public void hit(Deck deck) {
+        Card newCard = deck.drawCard();
+        hand.addCard(newCard);
     }
 
     public Card getUpCard() {
