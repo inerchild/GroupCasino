@@ -33,6 +33,10 @@ public class BlackjackPlayer {
         return currentBet;
     }
 
+    public int getHandValue() {
+        return hand.getValue();
+    }
+
     public void receiveCard(Card card) {
         hand.addCard(card);
     }
@@ -40,6 +44,18 @@ public class BlackjackPlayer {
     public void hit(com.github.zipcodewilmington.utils.Deck deck) {
         Card newCard = deck.drawCard();
         hand.addCard(newCard);
+    }
+
+    public boolean doubleDown(com.github.zipcodewilmington.utils.Deck deck) {
+        if (balance < currentBet) {
+            return false;
+        }
+        balance -= currentBet;
+        currentBet *= 2;
+
+        hit(deck);
+
+        return true;
     }
 
     public boolean placeBet(int amount) {
@@ -51,6 +67,7 @@ public class BlackjackPlayer {
         }
         currentBet = amount;
         balance -= amount;
+        
         return true;
     }
 
@@ -58,7 +75,7 @@ public class BlackjackPlayer {
         balance += currentBet + payout;
         currentBet = 0;
     }
-    
+
     public void lose() {
         currentBet = 0;
     }
@@ -75,5 +92,7 @@ public class BlackjackPlayer {
     public boolean isBroke() {
         return balance <=0;
     }
+
+   
 }
 
