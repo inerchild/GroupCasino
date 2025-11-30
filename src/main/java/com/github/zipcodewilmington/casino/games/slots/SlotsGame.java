@@ -25,7 +25,7 @@ public class SlotsGame implements GameInterface {
     
     private SymbolSet selectTheme() {
         System.out.println("\n╔═══════════════════════════════════════════════╗");
-        System.out.println("║          🎰 WELCOME TO SLOTS 🎰               ║");
+        System.out.println("║             WELCOME TO SLOTS                  ║");
         System.out.println("╚═══════════════════════════════════════════════╝");
         System.out.println("\nSelect your theme:");
         System.out.println("1. 🎰  Vegas Classic");
@@ -76,12 +76,26 @@ public class SlotsGame implements GameInterface {
     }
     
     private void displayWelcome() {
+    // Determine theme name based on symbols
+    List<Symbol> allSymbols = symbolSet.getAllSymbols();
+    String themeName = "VEGAS SLOTS";
+    
+    // Check for theme-specific symbols
+    for (Symbol symbol : allSymbols) {
+        if (symbol.getName().equals("Kraken") || symbol.getName().equals("Davy Jones")) {
+            themeName = "PIRATE'S TREASURE";
+            break;
+        } else if (symbol.getName().equals("Asteroid") || symbol.getName().equals("Black Hole")) {
+            themeName = "SPACE ADVENTURE";
+            break;
+        }
+    }
+    
     System.out.println("\n╔═══════════════════════════════════════════════╗");
-    System.out.println("║          🎰 WELCOME TO VEGAS SLOTS 🎰         ║");
+    System.out.println("║           WELCOME TO " + themeName + "          ║");
     System.out.println("╚═══════════════════════════════════════════════╝");
     
     // Get the special symbols for this theme
-    List<Symbol> allSymbols = symbolSet.getAllSymbols();
     Symbol bombSymbol = null;
     Symbol doomSymbol = null;
     Symbol highValueSymbol = null;
@@ -106,6 +120,7 @@ public class SlotsGame implements GameInterface {
     System.out.println((bombSymbol != null ? bombSymbol.getIcon() : "💣") + " Watch out for " + (bombSymbol != null ? bombSymbol.getName().toUpperCase() : "BOMBS") + " - they lose your bet!");
     System.out.println((doomSymbol != null ? doomSymbol.getIcon() : "☠️") + "  BEWARE: " + (doomSymbol != null ? doomSymbol.getName() : "Skull of Doom") + " lurks in the shadows...\n");
 }
+
     
     private void playWithPlayer(PlayerInterface player) {
         CasinoAccount account = player.getArcadeAccount();
@@ -157,7 +172,7 @@ public class SlotsGame implements GameInterface {
                         + String.format("%.2f", account.getAccountBalance()));
                     return;
                 default:
-                    System.out.println("❌ Invalid choice. Try again.");
+                    System.out.println("Invalid choice. Try again.");
             }
             
             if (account.getAccountBalance() <= 0) {
@@ -169,7 +184,7 @@ public class SlotsGame implements GameInterface {
     
     private void spinWithBet(CasinoAccount account, double betAmount) {
         if (account.getAccountBalance() < betAmount) {
-            System.out.println("\n❌ Insufficient funds! You need $" + betAmount);
+            System.out.println("\nInsufficient funds! You need $" + betAmount);
             return;
         }
         
@@ -194,7 +209,7 @@ public class SlotsGame implements GameInterface {
             System.out.println("💵 You won: $" + String.format("%.2f", payout));
             account.setAccountBalance(account.getAccountBalance() + betAmount + payout);
         } else {
-            System.out.println("\n😔 No match. Better luck next time!");
+            System.out.println("\nNo match. Better luck next time!");
         }
         
         System.out.println("💰 New Balance: $" + String.format("%.2f", account.getAccountBalance()));
@@ -205,7 +220,7 @@ public class SlotsGame implements GameInterface {
         try {
             double betAmount = Double.parseDouble(scanner.nextLine().trim());
             if (betAmount <= 0) {
-                System.out.println("❌ Bet must be positive!");
+                System.out.println("Bet must be positive!");
                 return;
             }
             spinWithBet(account, betAmount);
@@ -247,7 +262,7 @@ public class SlotsGame implements GameInterface {
         System.out.println("═════════════════════════════════════════");
         System.out.println("  Match 2 symbols = win!");
         System.out.println("  Match 3 symbols = JACKPOT!");
-        System.out.println("  Jackpot = bet × multiplier × 3");
+        System.out.println("  Jackpot = bet x multiplier x 3");
         System.out.println("═════════════════════════════════════════\n");
     }
     
@@ -319,7 +334,7 @@ public class SlotsGame implements GameInterface {
             newSymbolSet = SymbolSet.createVegaSymbolSet();
             break;
         case "2":
-            System.out.println("\n⚔️ Ahoy! Switched to Pirate's Treasure! 🏴‍☠️\n");
+            System.out.println("\n⚔️   Ahoy! Switched to Pirate's Treasure!  ⚔️\n");
             newSymbolSet = SymbolSet.createPirateSymbolSet();
             break;
         case "3":
@@ -330,7 +345,7 @@ public class SlotsGame implements GameInterface {
             System.out.println("\n↩️ Keeping current theme.\n");
             return;
         default:
-            System.out.println("\n❌ Invalid choice. Keeping current theme.\n");
+            System.out.println("\nInvalid choice. Keeping current theme.\n");
             return;
     }
     
