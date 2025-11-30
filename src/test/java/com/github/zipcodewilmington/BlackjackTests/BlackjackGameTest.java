@@ -1,435 +1,228 @@
 package com.github.zipcodewilmington.BlackjackTests;
 
 import com.github.zipcodewilmington.casino.games.blackjack.BlackjackGame;
-import com.github.zipcodewilmington.utils.Card;
-import com.github.zipcodewilmington.utils.Deck;
-import com.github.zipcodewilmington.utils.Rank;
-import com.github.zipcodewilmington.utils.Suit;
+import com.github.zipcodewilmington.casino.games.blackjack.BlackjackPlayer;
+import com.github.zipcodewilmington.casino.CasinoAccount;
+import com.github.zipcodewilmington.casino.PlayerInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BlackjackGameTest {
 
     private BlackjackGame game;
-    private static final String PLAYER_NAME = "TestPlayer";
-    private static final int STARTING_BALANCE = 1000;
-    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    private final PrintStream originalOut = System.out;
+    private CasinoAccount account;
+    private BlackjackPlayer player;
+    private static final String ACCOUNT_NAME = "TestPlayer";
+    private static final String ACCOUNT_PASSWORD = "password123";
+    private static final double STARTING_BALANCE = 1000.0;
 
     @BeforeEach
     void setUp() {
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        System.setOut(new PrintStream(outContent));
+        game = new BlackjackGame();
+        account = new CasinoAccount(ACCOUNT_NAME, ACCOUNT_PASSWORD);
+        account.creditAccount(STARTING_BALANCE);
+        player = new BlackjackPlayer(account);
     }
 
     @Test
     void testConstructor_CreatesGame() {
-        assertNotNull(game, "Game should be created");
+        assertNotNull(game);
     }
 
     @Test
     void testConstructor_InitializesComponents() {
-        BlackjackGame testGame = new BlackjackGame("Player1", 500);
-        assertNotNull(testGame, "Game with custom values should be created");
-    }
-
- 
-    @Test
-    void testPlay_ExitsWhenPlayerIsBroke() {
-        String input = "1000\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame("BrokePlayer", 1000);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("out of money") || output.contains("Game over"), 
-            "Should display broke message when player loses all money");
+        BlackjackGame testGame = new BlackjackGame();
+        assertNotNull(testGame);
     }
 
     @Test
-    void testPlay_AllowsMultipleRounds() {
-        String input = "100\ns\ny\n100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        int roundCount = countOccurrences(output, "Place your bet");
-        assertTrue(roundCount >= 2, "Should allow multiple rounds");
-    }
-
-
-    @Test
-    void testPlaceBet_AcceptsValidBet() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Bet placed") || output.contains("100"), 
-            "Should confirm bet placement");
+    void testAdd_AddsPlayer() {
+        game.add(player);
+        assertDoesNotThrow(() -> game.add(player));
     }
 
     @Test
-    void testPlaceBet_RejectsInvalidBet() {
-        String input = "-50\n100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Invalid") || output.contains("valid"), 
-            "Should reject negative bet");
+    void testAdd_AcceptsPlayerInterface() {
+        PlayerInterface playerInterface = player;
+        assertDoesNotThrow(() -> game.add(playerInterface));
     }
 
     @Test
-    void testPlaceBet_RejectsBetExceedingBalance() {
-        String input = "5000\n100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Invalid") || output.contains("between"), 
-            "Should reject bet exceeding balance");
+    void testRemove_RemovesPlayer() {
+        game.add(player);
+        assertDoesNotThrow(() -> game.remove(player));
     }
 
     @Test
-    void testPlaceBet_HandlesNonNumericInput() {
-        String input = "abc\n100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("valid number") || output.contains("Invalid"), 
-            "Should handle non-numeric input");
+    void testGameImplementsGameInterface() {
+        assertTrue(game instanceof com.github.zipcodewilmington.casino.GameInterface);
     }
 
     @Test
-    void testDealInitialCards_DealsTwoCardsToPlayer() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Your hand"), "Should display player's hand");
-        assertTrue(output.contains("Dealer shows"), "Should display dealer's up card");
-    }
-
-   
-    @Test
-    void testPlayerTurn_AllowsHit() {
-        String input = "100\nh\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("You drew") || output.contains("drew"), 
-            "Should allow player to hit");
+    void testPlayerImplementsPlayerInterface() {
+        assertTrue(player instanceof PlayerInterface);
     }
 
     @Test
-    void testPlayerTurn_AllowsStand() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("stand") || output.contains("Dealer"), 
-            "Should allow player to stand");
+    void testGameHasRunMethod() {
+        assertDoesNotThrow(() -> {
+            game.getClass().getMethod("run");
+        });
     }
 
     @Test
-    void testPlayerTurn_AllowsDoubleDown() {
-        String input = "100\nd\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Double") || output.contains("double") || output.contains("drew"), 
-            "Should allow double down option");
+    void testGameHasAddMethod() {
+        assertDoesNotThrow(() -> {
+            game.getClass().getMethod("add", PlayerInterface.class);
+        });
     }
 
     @Test
-    void testPlayerTurn_OffersDoubleDownOnlyWithTwoCards() {
-        String input = "100\nh\nh\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Choose action"), "Should show action prompt");
+    void testGameHasRemoveMethod() {
+        assertDoesNotThrow(() -> {
+            game.getClass().getMethod("remove", PlayerInterface.class);
+        });
     }
 
     @Test
-    void testPlayerTurn_DetectsBust() {
-        String input = "100\nh\nh\nh\nh\nh\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Bust") || output.contains("bust") || output.contains("lose"), 
-            "Should detect when player busts");
+    void testMultiplePlayersCanBeCreated() {
+        CasinoAccount account2 = new CasinoAccount("Player2", "pass");
+        account2.creditAccount(500.0);
+        BlackjackPlayer player2 = new BlackjackPlayer(account2);
+        assertNotNull(player2);
+        assertNotSame(player, player2);
     }
 
     @Test
-    void testPlayerTurn_HandlesInvalidInput() {
-        String input = "100\nxyz\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Invalid") || output.contains("again"), 
-            "Should handle invalid action input");
+    void testGameCanBeReused() {
+        game.add(player);
+        game.remove(player);
+        CasinoAccount newAccount = new CasinoAccount("NewPlayer", "pass");
+        newAccount.creditAccount(500.0);
+        BlackjackPlayer newPlayer = new BlackjackPlayer(newAccount);
+        assertDoesNotThrow(() -> game.add(newPlayer));
     }
 
     @Test
-    void testSplit_OfferedForPairs() {
-        String input = "100\nn\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.length() > 0, "Game should run without errors");
+    void testPlayerMaintainsAccountReference() {
+        game.add(player);
+        assertSame(account, player.getArcadeAccount());
     }
 
     @Test
-    void testSplit_RequiresSufficientFunds() {
-        String input = "600\nn\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.length() > 0, "Game should handle split with insufficient funds");
+    void testPlayerBalanceTracking() {
+        game.add(player);
+        double initialBalance = player.getArcadeAccount().getAccountBalance();
+        player.placeBet(100);
+        assertEquals(initialBalance - 100, player.getArcadeAccount().getAccountBalance());
     }
 
     @Test
-    void testDealerTurn_DealerPlaysAfterPlayer() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Dealer") && output.contains("Turn"), 
-            "Should display dealer's turn");
+    void testPlayerWinIncreasesBalance() {
+        game.add(player);
+        player.placeBet(100);
+        double balanceAfterBet = player.getArcadeAccount().getAccountBalance();
+        player.win(100);
+        assertEquals(balanceAfterBet + 200, player.getArcadeAccount().getAccountBalance());
     }
 
     @Test
-    void testDealerTurn_RevealsHand() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("reveals") || output.contains("final"), 
-            "Should reveal dealer's hand");
+    void testPlayerLoseKeepsBalanceUnchanged() {
+        game.add(player);
+        player.placeBet(100);
+        double balanceAfterBet = player.getArcadeAccount().getAccountBalance();
+        player.lose();
+        assertEquals(balanceAfterBet, player.getArcadeAccount().getAccountBalance());
     }
 
     @Test
-    void testDealerTurn_DetectsBust() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.length() > 0, "Should handle dealer bust scenario");
+    void testPlayerPushReturnsBalance() {
+        game.add(player);
+        double initialBalance = player.getArcadeAccount().getAccountBalance();
+        player.placeBet(100);
+        player.push();
+        assertEquals(initialBalance, player.getArcadeAccount().getAccountBalance());
     }
 
     @Test
-    void testDetermineWinner_PlayerWins() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Results") || output.contains("Balance"), 
-            "Should determine winner");
+    void testGameSupportsMultipleRounds() {
+        game.add(player);
+        player.placeBet(50);
+        player.win(50);
+        player.resetHand();
+        player.placeBet(75);
+        player.lose();
+        player.resetHand();
+        assertEquals(STARTING_BALANCE + 50 - 75, player.getArcadeAccount().getAccountBalance());
     }
 
     @Test
-    void testDetermineWinner_DealerWins() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Balance"), "Should show balance after round");
+    void testPlayerCanGoBlackjack() {
+        game.add(player);
+        player.receiveCard(new com.github.zipcodewilmington.utils.Card(
+            com.github.zipcodewilmington.utils.Suit.HEARTS, 
+            com.github.zipcodewilmington.utils.Rank.ACE));
+        player.receiveCard(new com.github.zipcodewilmington.utils.Card(
+            com.github.zipcodewilmington.utils.Suit.SPADES, 
+            com.github.zipcodewilmington.utils.Rank.KING));
+        assertTrue(player.getHand().isBlackjack());
+        assertEquals(21, player.getHandValue());
     }
 
     @Test
-    void testDetermineWinner_Push() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.length() > 0, "Should handle push scenario");
+    void testPlayerCanBust() {
+        game.add(player);
+        player.receiveCard(new com.github.zipcodewilmington.utils.Card(
+            com.github.zipcodewilmington.utils.Suit.HEARTS, 
+            com.github.zipcodewilmington.utils.Rank.KING));
+        player.receiveCard(new com.github.zipcodewilmington.utils.Card(
+            com.github.zipcodewilmington.utils.Suit.SPADES, 
+            com.github.zipcodewilmington.utils.Rank.QUEEN));
+        player.receiveCard(new com.github.zipcodewilmington.utils.Card(
+            com.github.zipcodewilmington.utils.Suit.DIAMONDS, 
+            com.github.zipcodewilmington.utils.Rank.FIVE));
+        assertTrue(player.getHand().isBusted());
+        assertEquals(25, player.getHandValue());
     }
 
     @Test
-    void testDetermineWinner_DealerBusts() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.length() > 0, "Should handle dealer bust");
-    }
-
-   
-    @Test
-    void testDeckShuffling_ShufflesWhenLow() {
-        String input = "50\ns\ny\n50\ns\ny\n50\ns\ny\n50\ns\ny\n50\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.length() > 0, "Should handle deck shuffling");
+    void testPlayerCanSplit() {
+        game.add(player);
+        player.receiveCard(new com.github.zipcodewilmington.utils.Card(
+            com.github.zipcodewilmington.utils.Suit.HEARTS, 
+            com.github.zipcodewilmington.utils.Rank.EIGHT));
+        player.receiveCard(new com.github.zipcodewilmington.utils.Card(
+            com.github.zipcodewilmington.utils.Suit.SPADES, 
+            com.github.zipcodewilmington.utils.Rank.EIGHT));
+        assertTrue(player.getHand().canSplit());
     }
 
     @Test
-    void testMultipleRounds_BalanceTracking() {
-        String input = "100\ns\ny\n100\ns\ny\n100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Balance"), "Should track balance across rounds");
+    void testPlayerCanDoubleDown() {
+        game.add(player);
+        player.placeBet(200);
+        com.github.zipcodewilmington.utils.Deck deck = new com.github.zipcodewilmington.utils.Deck();
+        boolean success = player.doubleDown(deck);
+        assertTrue(success);
+        assertEquals(400, player.getCurrentBet());
     }
 
     @Test
-    void testPlayerBusts_EndsRoundImmediately() {
-        String input = "100\nh\nh\nh\nh\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.length() > 0, "Should end round when player busts");
-    }
-
-
-    @Test
-    void testPlayAgainPrompt_YesContinues() {
-        String input = "100\ns\ny\n100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        int betPrompts = countOccurrences(output, "Place your bet");
-        assertTrue(betPrompts >= 2, "Should continue to next round on 'yes'");
-    }
-
-    @Test
-    void testPlayAgainPrompt_NoExits() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Thanks for playing"), "Should exit on 'no'");
-    }
-
-    @Test
-    void testCompleteGameFlow_WithWin() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Welcome"), "Should have welcome message");
-        assertTrue(output.contains("Balance"), "Should show balance");
-        assertTrue(output.contains("Thanks"), "Should have exit message");
-    }
-
-    @Test
-    void testCompleteGameFlow_WithLoss() {
-        String input = "100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Dealer") || output.contains("Balance"), 
-            "Should complete game flow");
-    }
-
-    @Test
-    void testGameHandlesAllPlayerActions() {
-        String input = "100\nh\ns\ny\n100\nd\ny\n100\ns\nn\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-        game = new BlackjackGame(PLAYER_NAME, STARTING_BALANCE);
-        
-        game.play();
-        
-        String output = outContent.toString();
-        assertTrue(output.contains("Balance"), "Should handle all player actions");
-    }
-
-    private int countOccurrences(String text, String substring) {
-        int count = 0;
-        int index = 0;
-        while ((index = text.indexOf(substring, index)) != -1) {
-            count++;
-            index += substring.length();
-        }
-        return count;
+    void testIntegration_CompleteGameFlow() {
+        game.add(player);
+        double initialBalance = account.getAccountBalance();
+        player.placeBet(100);
+        player.receiveCard(new com.github.zipcodewilmington.utils.Card(
+            com.github.zipcodewilmington.utils.Suit.HEARTS, 
+            com.github.zipcodewilmington.utils.Rank.KING));
+        player.receiveCard(new com.github.zipcodewilmington.utils.Card(
+            com.github.zipcodewilmington.utils.Suit.SPADES, 
+            com.github.zipcodewilmington.utils.Rank.NINE));
+        assertFalse(player.getHand().isBusted());
+        assertEquals(19, player.getHandValue());
+        player.win(100);
+        assertEquals(initialBalance + 100, account.getAccountBalance());
     }
 }

@@ -16,6 +16,8 @@ import com.github.zipcodewilmington.casino.games.war.WarGame;
 import com.github.zipcodewilmington.casino.games.war.WarPlayer;
 import com.github.zipcodewilmington.casino.games.Poker.PokerGame;
 import com.github.zipcodewilmington.casino.games.Poker.PokerPlayer;
+import com.github.zipcodewilmington.casino.games.blackjack.BlackjackGame;
+import com.github.zipcodewilmington.casino.games.blackjack.BlackjackPlayer;
 import com.github.zipcodewilmington.utils.AnsiColor;
 import com.github.zipcodewilmington.utils.IOConsole;
 
@@ -72,6 +74,8 @@ public class Casino implements Runnable {
                             play(new TicTacToeGame(), new HumanPlayer(currentAccount));
                         } else if (gameSelectionInput.equals("POKER")) {
                             play(new PokerGame(), new PokerPlayer(currentAccount));
+                        } else if (gameSelectionInput.equals("BLACKJACK")){
+                            play(new BlackjackGame(), new BlackjackPlayer(currentAccount));
                         } else {
                             String errorMessage = "[ %s ] is an invalid game selection";
                             console.println(String.format(errorMessage, gameSelectionInput));
@@ -115,7 +119,7 @@ public class Casino implements Runnable {
         return console.getStringInput(new StringBuilder()
                 .append("Welcome to the Game Selection Dashboard!")
                 .append("\nFrom here, you can select any of the following options:")
-                .append("\n\t[ SLOTS ], [ NUMBERGUESS ], [ WAR ], [ CRAPS ], [TICTACTOE], [ POKER ]")
+                .append("\n\t[ SLOTS ], [ NUMBERGUESS ], [ WAR ], [ CRAPS ], [TICTACTOE], [ POKER ], [ BLACKJACK ]")
                 .toString());
     }
 

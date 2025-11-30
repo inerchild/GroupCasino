@@ -1,32 +1,32 @@
 package com.github.zipcodewilmington.casino.games.blackjack;
 
-import com.github.zipcodewilmington.utils.Card;
+import com.github.zipcodewilmington.casino.CasinoAccount;
+import com.github.zipcodewilmington.casino.PlayerInterface;
 
-
-public class BlackjackPlayer {
-
-    private String name;
+public class BlackjackPlayer implements PlayerInterface {
+    
+    private CasinoAccount account;
     private BlackjackHand hand;
-    private int balance;        
     private int currentBet;
 
-    public BlackjackPlayer(String name, int startingBalance) {
-        this.name = name;
+    public BlackjackPlayer(CasinoAccount account) {
+        this.account = account;
         this.hand = new BlackjackHand();
-        this.balance = startingBalance;
         this.currentBet = 0;
-        }
+    }
 
-    public String getName() {
-        return name;
+    @Override
+    public CasinoAccount getArcadeAccount() {
+        return account;
+    }
+
+    @Override
+    public CasinoAccount play() {
+        return account;
     }
 
     public BlackjackHand getHand() {
         return hand;
-    }
-
-    public int getBalance() {
-        return balance;
     }
 
     public int getCurrentBet() {
@@ -37,24 +37,23 @@ public class BlackjackPlayer {
         return hand.getValue();
     }
 
-    public void receiveCard(Card card) {
+    public void receiveCard(com.github.zipcodewilmington.utils.Card card) {
         hand.addCard(card);
     }
 
     public void hit(com.github.zipcodewilmington.utils.Deck deck) {
-        Card newCard = deck.drawCard();
+        com.github.zipcodewilmington.utils.Card newCard = deck.drawCard();
         hand.addCard(newCard);
     }
 
     public boolean doubleDown(com.github.zipcodewilmington.utils.Deck deck) {
+        double balance = account.getAccountBalance();
         if (balance < currentBet) {
             return false;
         }
-        balance -= currentBet;
+        account.debitAccount((double) currentBet);
         currentBet *= 2;
-
         hit(deck);
-
         return true;
     }
 
@@ -62,17 +61,16 @@ public class BlackjackPlayer {
         if (amount <= 0) {
             return false;
         }
-        if (amount > balance) {
+        if (amount > account.getAccountBalance().intValue()) {
             return false;
         }
         currentBet = amount;
-        balance -= amount;
-        
+        account.debitAccount((double) amount);
         return true;
     }
 
     public void win(int payout) {
-        balance += currentBet + payout;
+        account.creditAccount((double) (currentBet + payout));
         currentBet = 0;
     }
 
@@ -81,18 +79,20 @@ public class BlackjackPlayer {
     }
 
     public void push() {
-        balance += currentBet;
+        account.creditAccount((double) currentBet);
         currentBet = 0;
     }
 
     public boolean canAffordBet(int amount) {
-        return balance >= amount;
+        return account.getAccountBalance().intValue() >= amount;
     }
 
     public boolean isBroke() {
-        return balance <=0;
+        return account.getAccountBalance() <= 0;
     }
 
-   
+    public void resetHand() {
+        hand = new BlackjackHand();
+        currentBet = 0;
+    }
 }
-
