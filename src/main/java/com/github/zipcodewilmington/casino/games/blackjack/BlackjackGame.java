@@ -50,6 +50,7 @@ public class BlackjackGame {
             System.out.println("Shuffling new deck....");
         }
 
+
         if (!placeBet()) {
             return;
         }
@@ -61,14 +62,19 @@ public class BlackjackGame {
         }
 
         if (player.getHand().isBlackjack()) {
-            System.out.println("\n Blackjack! You win 3:2!");
+            System.out.println("\n Blackjack! You win!");
             int payout = (int)(player.getCurrentBet() * 1.5);
             player.win(payout);
             System.out.println("Balance: $" + player.getBalance());
             return;
         }
 
-        playerTurn();
+        boolean playerSplit = playerTurn();
+        
+        if (playerSplit) {
+            return;
+        }
+        
         if (player.getHand().isBusted()) {
             System.out.println("\n Bust! Dealer wins.");
             player.lose();
@@ -133,12 +139,29 @@ public class BlackjackGame {
         return false;
     }
     
-    private void playerTurn() {
-        while (!player.getHand().isBusted()) {
+    private boolean playerTurn() {
+
+        if (player.getHand().canSplit() && player.canAffordBet(player.getCurrentBet())) {
             System.out.println("\nYour hand: " + player.getHand());
+            System.out.print("You have a pair! Would you like to split? (y/n): ");
+            String choice = scanner.nextLine().trim().toLowerCase();
+            
+            if (choice.equals("y") || choice.equals("yes")) {
+                handleSplit();
+                return true;
+            }
+        }
+
+        playHand(player.getHand(), "Your hand");
+        return false;
+    }
+    
+    private void playHand(BlackjackHand hand, String handName) {
+        while (!hand.isBusted()) {
+            System.out.println("\n" + handName + ": " + hand);
             System.out.print("Choose action - (h)it, (s)tand");
             
-            if (player.getHand().size() == 2 && player.canAffordBet(player.getCurrentBet())) {
+            if (hand.size() == 2 && player.canAffordBet(player.getCurrentBet())) {
                 System.out.print(", (d)ouble down");
             }
             
@@ -148,21 +171,27 @@ public class BlackjackGame {
             switch (choice) {
                 case "h":
                 case "hit":
-                    player.hit(deck);
-                    System.out.println("You drew: " + player.getHand().getCards().get(player.getHand().size() - 1));
+                    hand.addCard(deck.drawCard());
+                    System.out.println("You drew: " + hand.getCards().get(hand.size() - 1));
                     break;
                     
                 case "s":
                 case "stand":
-                    System.out.println("You stand at " + player.getHandValue());
+                    System.out.println("You stand at " + hand.getValue());
                     return;
                     
                 case "d":
                 case "double":
-                    if (player.getHand().size() == 2 && player.doubleDown(deck)) {
-                        System.out.println("Double down! Drew: " + player.getHand().getCards().get(player.getHand().size() - 1));
-                        System.out.println("Your hand: " + player.getHand());
-                        return;
+                    if (hand.size() == 2 && player.canAffordBet(player.getCurrentBet())) {
+                        int additionalBet = player.getCurrentBet();
+
+                        if (player.placeBet(additionalBet)) {
+                            hand.addCard(deck.drawCard());
+
+                            System.out.println("Double down! Drew: " + hand.getCards().get(hand.size() - 1));
+                            System.out.println(handName + ": " + hand);
+                            return;
+                        }
                     } else {
                         System.out.println("Cannot double down.");
                     }
@@ -172,6 +201,91 @@ public class BlackjackGame {
                     System.out.println("Invalid choice. Please try again.");
             }
         }
+    }
+    
+    private void handleSplit() {
+        System.out.println("\n=== SPLITTING PAIR ===");
+        
+        int originalBet = player.getCurrentBet();
+        if (!player.placeBet(originalBet)) {
+            System.out.println("Not enough funds to split. Playing single hand.");
+            playHand(player.getHand(), "Your hand");
+            return;
+        }
+        
+        BlackjackHand firstHand = player.getHand();
+        BlackjackHand secondHand = firstHand.split();
+        
+        firstHand.addCard(deck.drawCard());
+        secondHand.addCard(deck.drawCard());
+        
+        System.out.println("First hand: " + firstHand);
+        System.out.println("Second hand: " + secondHand);
+        
+        System.out.println("\n--- Playing First Hand ---");
+        playHand(firstHand, "First hand");
+        
+        boolean firstHandBusted = firstHand.isBusted();
+        int firstHandValue = firstHand.getValue();
+        
+        if (firstHandBusted) {
+            System.out.println("First hand busted!");
+        } else {
+            System.out.println("First hand final value: " + firstHandValue);
+        }
+        
+        System.out.println("\n--- Playing Second Hand ---");
+        playHand(secondHand, "Second hand");
+        
+        boolean secondHandBusted = secondHand.isBusted();
+        int secondHandValue = secondHand.getValue();
+        
+        if (secondHandBusted) {
+            System.out.println("Second hand busted!");
+        } else {
+            System.out.println("Second hand final value: " + secondHandValue);
+        }
+        
+        dealerTurn();
+        
+        int dealerValue = dealer.getHandValue();
+        boolean dealerBusted = dealer.getHand().isBusted();
+        
+        System.out.println("\n=== SPLIT HAND RESULTS ===");
+        
+        System.out.println("\nFirst Hand:");
+        if (firstHandBusted) {
+            System.out.println(" Busted - You lose");
+        } else if (dealerBusted) {
+            System.out.println(" You win! Dealer busted.");
+            player.win(originalBet);
+        } else if (firstHandValue > dealerValue) {
+            System.out.println(" You win! " + firstHandValue + " beats " + dealerValue);
+            player.win(originalBet);
+        } else if (firstHandValue < dealerValue) {
+            System.out.println(" Dealer wins. " + dealerValue + " beats " + firstHandValue);
+        } else {
+            System.out.println(" Push! Tie at " + firstHandValue);
+            player.push();
+        }
+        
+        System.out.println("\nSecond Hand:");
+        if (secondHandBusted) {
+            System.out.println(" Busted - You lose");
+        } else if (dealerBusted) {
+            System.out.println(" You win! Dealer busted.");
+            player.win(originalBet);
+        } else if (secondHandValue > dealerValue) {
+            System.out.println(" You win! " + secondHandValue + " beats " + dealerValue);
+            player.win(originalBet);
+        } else if (secondHandValue < dealerValue) {
+            System.out.println(" Dealer wins. " + dealerValue + " beats " + secondHandValue);
+        } else {
+            System.out.println(" Push! Tie at " + secondHandValue);
+            player.push();
+        }
+        
+        System.out.println("\nBalance: $" + player.getBalance());
     }
 
     private void dealerTurn() {
