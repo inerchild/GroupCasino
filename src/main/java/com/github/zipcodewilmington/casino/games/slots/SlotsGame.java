@@ -127,7 +127,8 @@ public class SlotsGame implements GameInterface {
             System.out.println("3. Spin ($50 bet)");
             System.out.println("4. Custom bet");
             System.out.println("5. View paytable");
-            System.out.println("6. Exit game");
+            System.out.println("6. Change Theme");
+            System.out.println("7. Exit game");
             System.out.print("\nChoice: ");
             
             String choice = scanner.nextLine().trim();
@@ -149,6 +150,9 @@ public class SlotsGame implements GameInterface {
                     displayPaytable();
                     break;
                 case "6":
+                    changeTheme();
+                    break;
+                case "7":
                     System.out.println("\n👋 Thanks for playing! Final balance: $" 
                         + String.format("%.2f", account.getAccountBalance()));
                     return;
@@ -289,8 +293,52 @@ public class SlotsGame implements GameInterface {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println("\n╔═══════════╦═══════════╦═══════════╗");
-            System.out.println("║     " + finalResult.get(0).getIcon() + "     ║     " + finalResult.get(1).getIcon() + "     ║     " + finalResult.get(2).getIcon() + "     ║");
+            System.out.println("║     " + finalResult.get(0).getIcon() + "      ║     " + finalResult.get(1).getIcon() + "     ║     " + finalResult.get(2).getIcon() + "     ║");
             System.out.println("╚═══════════╩═══════════╩═══════════╝\n");
         }
     }
+
+    private void changeTheme() {
+    System.out.println("\n╔═══════════════════════════════════════════════╗");
+    System.out.println("║            CHANGE THEME                   ║");
+    System.out.println("╚═══════════════════════════════════════════════╝");
+    System.out.println("\nSelect new theme:");
+    System.out.println("1. 🎰 Vegas Classic");
+    System.out.println("2. ⚔️ Pirate's Treasure");
+    System.out.println("3. 🚀 Space Adventure");
+    System.out.println("4. Cancel (keep current theme)");
+    System.out.print("\nChoice: ");
+    
+    String choice = scanner.nextLine().trim();
+    
+    SymbolSet newSymbolSet = null;
+    
+    switch (choice) {
+        case "1":
+            System.out.println("\n🎰 Switched to Vegas Classic! 🎰\n");
+            newSymbolSet = SymbolSet.createVegaSymbolSet();
+            break;
+        case "2":
+            System.out.println("\n⚔️ Ahoy! Switched to Pirate's Treasure! 🏴‍☠️\n");
+            newSymbolSet = SymbolSet.createPirateSymbolSet();
+            break;
+        case "3":
+            System.out.println("\n🚀 Switched to Space Adventure! 🚀\n");
+            newSymbolSet = SymbolSet.createSpaceSymbolSet();
+            break;
+        case "4":
+            System.out.println("\n↩️ Keeping current theme.\n");
+            return;
+        default:
+            System.out.println("\n❌ Invalid choice. Keeping current theme.\n");
+            return;
+    }
+    
+    // Update to new theme
+    if (newSymbolSet != null) {
+        this.symbolSet = newSymbolSet;
+        this.slotMachine = new SlotMachine(symbolSet);
+        displayWelcome();
+    }
+}
 }
