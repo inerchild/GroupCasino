@@ -581,17 +581,17 @@ class BlackjackHandTest {
 
     @Test
     void testAceFlexibility() {
-        hand.addCard(new Card(Suit.HEARTS, Rank.ACE));
-        hand.addCard(new Card(Suit.SPADES, Rank.FIVE));
-        assertEquals(16, hand.getValue(), "Ace + 5 should be 16 (soft)");
-        assertTrue(hand.isSoft(), "Should be soft");
+    hand.addCard(new Card(Suit.HEARTS, Rank.ACE));
+    hand.addCard(new Card(Suit.SPADES, Rank.FIVE));
+    assertEquals(16, hand.getValue(), "Ace + 5 should be 16 (soft)");
+    assertTrue(hand.isSoft(), "Should be soft");
 
-        hand.addCard(new Card(Suit.DIAMONDS, Rank.FIVE));
+    hand.addCard(new Card(Suit.DIAMONDS, Rank.NINE));
 
-        assertEquals(11, hand.getValue(), "Ace should convert to 1");
-        assertFalse(hand.isSoft(), "Should not be soft anymore");
-        assertFalse(hand.isBusted(), "Should not be busted");
-    }
+    assertEquals(15, hand.getValue(), "Ace should convert to 1 (1 + 5 + 9 = 15)");
+    assertFalse(hand.isSoft(), "Should not be soft anymore");
+    assertFalse(hand.isBusted(), "Should not be busted");
+}
 }
 
 

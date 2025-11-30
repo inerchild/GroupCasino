@@ -58,17 +58,23 @@ public class BlackjackHand {
     }
 
     public boolean isSoft() {
-        int aceCount = 0;
-        int total = 0;
+    int aceCount = 0;
+    int total = 0;
 
-        for (Card card : cards) {
-            total += getBlackjackValue(card);
-            if (card.getRank() == com.github.zipcodewilmington.utils.Rank.ACE){
-                aceCount++;
-            }
+    for (Card card : cards) {
+        total += getBlackjackValue(card);
+        if (card.getRank() == com.github.zipcodewilmington.utils.Rank.ACE){
+            aceCount++;
         }
-        return aceCount > 0 && total <= 21;
     }
+
+    while (total > 21 && aceCount > 0) {
+        total -= 10;
+        aceCount--;
+    }
+    
+    return aceCount > 0 && total <= 21;
+}
 
     public boolean canSplit() {
         return cards.size() == 2 && cards.get(0).getRank() == cards.get(1).getRank();
