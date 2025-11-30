@@ -1,0 +1,29 @@
+[ {
+  "accountName" : "Test",
+  "accountPassword" : "Test",
+  "accountBalance" : 1340.0
+}, {
+  "accountName" : "Alice",
+  "accountPassword" : "1234",
+  "accountBalance" : 500.0
+}, {
+  "accountName" : "Kris",
+  "accountPassword" : "kristopher",
+  "accountBalance" : 1000.0
+}, {
+  "accountName" : "Ben",
+  "accountPassword" : "123",
+  "accountBalance" : 980.0
+}, {
+  "accountName" : "Ben",
+  "accountPassword" : "123",
+  "accountBalance" : 1000.0
+}, {
+  "accountName" : "test",
+  "accountPassword" : "test",
+  "accountBalance" : 1000.0
+}, {
+  "accountName" : "test",
+  "accountPassword" : "test",
+  "accountBalance" : 1000.0
+} ]
