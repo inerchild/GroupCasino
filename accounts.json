@@ -14,4 +14,8 @@
   "accountName" : "Ben",
   "accountPassword" : "123",
   "accountBalance" : 980.0
+}, {
+  "accountName" : "Ben",
+  "accountPassword" : "123",
+  "accountBalance" : 1000.0
 } ]

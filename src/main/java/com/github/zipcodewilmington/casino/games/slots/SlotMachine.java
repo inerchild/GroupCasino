@@ -122,7 +122,7 @@ public class SlotMachine {
 
         //Checks for SkullOfDoom - GAME OVER easter egg (checked FIRST!)
         if (hasSkullOfDoom()) {
-            triggerSkullOfDoom(); // 💀 THIS ENDS THE GAME
+            triggerSkullOfDoom(); //  THIS ENDS THE GAME
             return 0.0; // This line will never be reached
         }
 

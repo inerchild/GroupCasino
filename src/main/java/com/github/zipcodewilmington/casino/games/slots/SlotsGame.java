@@ -188,21 +188,34 @@ public class SlotsGame implements GameInterface {
     }
     
     private void displayPaytable() {
+        List<Symbol> allSymbols = symbolSet.getAllSymbols();
+        
         System.out.println("\n");
         System.out.println("═════════════════════════════════════════");
         System.out.println("            💎 PAYTABLE 💎");
         System.out.println("═════════════════════════════════════════");
         System.out.println();
-        System.out.println("  🍒 Cherry .......... 3x");
-        System.out.println("  🍋 Lemon ........... 3x");
-        System.out.println("  🍊 Orange .......... 4x");
-        System.out.println("  🍇 Grape ........... 5x");
-        System.out.println("  🔔 Bell ............ 7x");
-        System.out.println("  ⭐ Star ............ 8x");
-        System.out.println("  7️⃣  Seven .......... 10x");
-        System.out.println("  💎 Diamond ......... 20x");
-        System.out.println("  💣 Bomb ............ LOSE BET!");
-        System.out.println("  ☠️  Skull .......... [REDACTED]");
+        
+        for (Symbol symbol : allSymbols) {
+            String name = symbol.getName();
+            String icon = symbol.getIcon();
+            int multiplier = symbol.getMultiplier();
+            
+            String multiplierText;
+            if (multiplier == 0) {
+                if (name.equals("Bomb") || name.equals("Kraken") || name.equals("Asteroid")) {
+                    multiplierText = "LOSE BET!";
+                } else {
+                    multiplierText = "[REDACTED]";
+                }
+            } else {
+                multiplierText = multiplier + "x";
+            }
+            
+            String dots = "..........";
+            System.out.println("  " + icon + " " + name + " " + dots + " " + multiplierText);
+        }
+        
         System.out.println();
         System.out.println("═════════════════════════════════════════");
         System.out.println("  Match 2 symbols = win!");
@@ -228,8 +241,7 @@ public class SlotsGame implements GameInterface {
             
             for (int frame = 0; frame < spinFrames; frame++) {
                 if (frame > 0) {
-                    System.out.print("\033[1A");
-                    System.out.print("\033[2K");
+                    System.out.print("\033[3A");
                 }
                 
                 Symbol s1, s2, s3;
@@ -243,22 +255,18 @@ public class SlotsGame implements GameInterface {
                     s3 = allSymbols.get((int)(Math.random() * allSymbols.size()));
                 }
                 
-                System.out.println("      " + s1.getIcon() + "      " + s2.getIcon() + "      " + s3.getIcon());
+                System.out.println("╔═══════════╦═══════════╦═══════════╗");
+                System.out.println("║     " + s1.getIcon() + "    ║     " + s2.getIcon() + "    ║     " + s3.getIcon() + "    ║");
+                System.out.println("╚═══════════╩═══════════╩═══════════╝");
                 
                 int delay = frame < spinFrames - 3 ? 70 : 300;
                 Thread.sleep(delay);
             }
             
-            System.out.print("\033[1A");
-            System.out.print("\033[2K");
-            System.out.println("\n╔═══════════╦═══════════╦═══════════╗");
-            System.out.println("║     " + finalResult.get(0).getIcon() + "    ║     " + finalResult.get(1).getIcon() + "    ║     " + finalResult.get(2).getIcon() + "    ║");
-            System.out.println("╚═══════════╩═══════════╩═══════════╝");
-            
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println("\n╔═══════════╦═══════════╦═══════════╗");
-            System.out.println("║     " + finalResult.get(0).getIcon() + "    ║     " + finalResult.get(1).getIcon() + "    ║     " + finalResult.get(2).getIcon() + "    ║");
+            System.out.println("║     " + finalResult.get(0).getIcon() + "     ║     " + finalResult.get(1).getIcon() + "     ║     " + finalResult.get(2).getIcon() + "     ║");
             System.out.println("╚═══════════╩═══════════╩═══════════╝\n");
         }
     }
