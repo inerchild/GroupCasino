@@ -16,6 +16,10 @@ public class CasinoAccount {
         this.accountBalance = 1000.0;
     }
 
+    public CasinoAccount() {
+        
+    }
+
     public String getAccountName() {
         return accountName;
     }
