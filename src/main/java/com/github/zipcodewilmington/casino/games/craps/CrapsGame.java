@@ -56,10 +56,8 @@ public class CrapsGame implements GameInterface{
             return;
         }
 
-
-       System.out.println("====================================");
-        System.out.println("      Welcome to the Craps Table    ");
-        System.out.println("====================================");
+         printIntroBanner(); 
+        
 
         boolean gameStillRunning = true;
 
@@ -75,10 +73,12 @@ public class CrapsGame implements GameInterface{
                     continue;
                 }
 
-                System.out.println("\n------------------------------------");
+                System.out.println("\n----------------------  PLAYER INFO  ------------------------");
                 System.out.println("Player: " + player.getName());
-                System.out.printf("Current balance: $%.2f%n", account.getAccountBalance());
+                System.out.printf("Balance: $%.2f%n", account.getAccountBalance());
+                System.out.println("-------------------------------------------------------------\n");
 
+                printCrapsTable();
                 BetType betType = promptForBetType();
                 if (betType == BetType.QUIT) {
                     System.out.println(player.getName() + " leaves the craps table.");
@@ -137,16 +137,28 @@ public class CrapsGame implements GameInterface{
         System.out.println("Craps game over.");
     }
 
+    private void printIntroBanner() {
+    System.out.println(
+            "\n" +
+            "============================================================\n" +
+            "                   WELCOME TO THE CRAPS TABLE               \n" +
+            "------------------------------------------------------------\n" +
+            "               Roll the dice. Make your bets.               \n" +
+            "                  Good luck, shooter!                       \n" +
+            "============================================================\n"
+    );
+}
+
     private BetType promptForBetType() {
         while (true) {
             System.out.println("\nChoose your bet type:");
-            System.out.println("1. Pass Line");
-            System.out.println("2. Don't Pass Line");
-            System.out.println("3. Field Bet (single roll)");
-            System.out.println("4. Come Bet");
-            System.out.println("5. Don't Come Bet");
-            System.out.println("6. Place Bet (4,5,6,8,9,10)");
-            System.out.println("7. Quit to Casino Menu");
+            System.out.println(" 1) Pass Line");
+            System.out.println(" 2) Don't Pass Line");
+            System.out.println(" 3) Field Bet (single roll)");
+            System.out.println(" 4) Come Bet");
+            System.out.println(" 5) Don't Come Bet");
+            System.out.println(" 6) Place Bet (4,5,6,8,9,10)");
+            System.out.println(" 7) Quit");
 
             String input = scanner.nextLine().trim();
 
@@ -601,15 +613,82 @@ public class CrapsGame implements GameInterface{
         }
     }
 
-    protected int rollDice() {
-        int die1 = random.nextInt(6) + 1;
-        int die2 = random.nextInt(6) + 1;
-        int sum = die1 + die2;
-        System.out.println("Dice: [" + die1 + "][" + die2 + "] (total " + sum + ")");
-        return sum;
-    }
+
+        protected int rollDice() {
+            int die1 = random.nextInt(6) + 1;
+            int die2 = random.nextInt(6) + 1;
+            int sum = die1 + die2;
+
+            printDice(die1, die2, sum);
+
+            return sum;
+        }
+
+        private void printDice(int d1, int d2, int sum) {
+            String die1 = diceFace(d1);
+            String die2 = diceFace(d2);
+
+            System.out.println("\nYour roll:");
+            System.out.println(die1 + "   " + die2);
+            System.out.println("Total: " + sum + "\n");
+        }
+
+        private String diceFace(int n) {
+            switch (n) {
+                case 1:
+                    return  "┌─────┐\n" +
+                            "│     │\n" +
+                            "│  ●  │\n" +
+                            "│     │\n" +
+                            "└─────┘";
+                case 2:
+                    return  "┌─────┐\n" +
+                            "│●    │\n" +
+                            "│     │\n" +
+                            "│    ●│\n" +
+                            "└─────┘";
+                case 3:
+                    return  "┌─────┐\n" +
+                            "│●    │\n" +
+                            "│  ●  │\n" +
+                            "│    ●│\n" +
+                            "└─────┘";
+                case 4:
+                    return  "┌─────┐\n" +
+                            "│●   ●│\n" +
+                            "│     │\n" +
+                            "│●   ●│\n" +
+                            "└─────┘";
+                case 5:
+                    return  "┌─────┐\n" +
+                            "│●   ●│\n" +
+                            "│  ●  │\n" +
+                            "│●   ●│\n" +
+                            "└─────┘";
+                case 6:
+                    return  "┌─────┐\n" +
+                            "│●   ●│\n" +
+                            "│●   ●│\n" +
+                            "│●   ●│\n" +
+                            "└─────┘";
+                default:
+                    return "";
+            }
+        }
 
     private void printBalance(CasinoAccount account) {
         System.out.printf("New balance: $%.2f%n", account.getAccountBalance());
+    }
+
+    private void printCrapsTable() {
+        System.out.println(
+                "========================= CRAPS TABLE ========================\n" +
+                "| PASS LINE | COME | FIELD | DON'T PASS | PLACE BETS         |\n" +
+                "--------------------------------------------------------------\n" +
+                "| Field: Wins on 2,3,4,9,10,11 (2 pays 2:1, 12 pays 3:1)     |\n" +
+                "| Pass Line: Win on 7/11, Lose on 2/3/12, otherwise point    |\n" +
+                "| Place Bets: Choose numbers 4,5,6,8,9,10                    |\n" +
+                "==============================================================\n"
+        );
     }
 }
