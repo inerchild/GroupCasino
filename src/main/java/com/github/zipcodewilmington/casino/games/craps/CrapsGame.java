@@ -275,59 +275,41 @@ public class CrapsGame implements GameInterface{
     }
 
 
-//
-    
-    private Double promptForBet(CasinoAccount account) {
-        while (true) {
-            System.out.printf("Enter your bet amount (or 'q' to leave table): ");
-
-            String input = scanner.nextLine().trim().toLowerCase();
-
-            if (input.equals("q") || input.equals("quit")) {
-                return null;
-            }
-
-        
-        try {
-                double bet = Double.parseDouble(input);
-                if (bet <= 0) {
-                    System.out.println("Bet must be greater than 0.");
-                } else if (bet > account.getAccountBalance()) {
-                    System.out.println("You cannot bet more than your current balance.");
-                } else {
-                    return bet;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid number. Please enter a numeric bet.");
-            }
-        }   
-    }
-
-    private void playCrapsRound(CrapsPlayer player, double bet) {
+     private void resolvePassLineBet(CrapsPlayer player, double baseBet) {
         CasinoAccount account = player.getArcadeAccount();
 
-        account.debitAccount(bet);
-        System.out.printf("%s bets $%.2f%n", player.getName(), bet);
+        account.debitAccount(baseBet);
+        System.out.printf("%s bets $%.2f on Pass Line.%n", player.getName(), baseBet);
 
         int comeOutRoll = rollDice();
         System.out.println("Come-out roll: " + comeOutRoll);
 
         if (comeOutRoll == 7 || comeOutRoll == 11) {
-            System.out.println("You rolled a natural! You WIN!");
-            account.creditAccount(bet * 2);
+            System.out.println("You rolled a natural! Pass Line WINS!");
+            account.creditAccount(baseBet * 2);
             printBalance(account);
             return;
         }
-    
 
         if (comeOutRoll == 2 || comeOutRoll == 3 || comeOutRoll == 12) {
-            System.out.println("Craps! You LOSE.");
+            System.out.println("Craps! Pass Line loses.");
             printBalance(account);
             return;
         }
 
-         int point = comeOutRoll;
+        int point = comeOutRoll;
         System.out.println("Point is set to: " + point);
+
+        double oddsBet = 0.0;
+        if (account.getAccountBalance() > 0 && promptYesNo("Place odds on Pass Line? (y/n): ")) {
+            double maxOdds = Math.min(baseBet, account.getAccountBalance());
+            oddsBet = promptForOddsAmount(account, maxOdds);
+            if (oddsBet > 0) {
+                account.debitAccount(oddsBet);
+                System.out.printf("Odds bet of $%.2f placed behind Pass Line.%n", oddsBet);
+            }
+        }
+
         System.out.println("Keep rolling: hit " + point + " to win, or 7 to lose.");
 
         while (true) {
@@ -335,47 +317,244 @@ public class CrapsGame implements GameInterface{
             System.out.println("You rolled: " + roll);
 
             if (roll == point) {
-                System.out.println("You made your point! You WIN!");
-                account.creditAccount(bet * 2);
+                System.out.println("You made your point! Pass Line WINS!");
+                account.creditAccount(baseBet * 2);
+                if (oddsBet > 0) {
+                    double oddsWin = calculatePassOddsWin(point, oddsBet);
+                    account.creditAccount(oddsBet + oddsWin);
+                }
                 printBalance(account);
                 return;
             } else if (roll == 7) {
-                System.out.println("Seven out! You LOSE.");
+                System.out.println("Seven out! Pass Line loses.");
                 printBalance(account);
                 return;
             } else {
                 System.out.println("No decision, roll again...");
             }
-        
         }
     }
 
-      private boolean promptPlayAnotherRound(CrapsPlayer player) {
-        while (true) {
-            System.out.print("Play another round, " + player.getName() + "? (y/n): ");
-            String input = scanner.nextLine().trim().toLowerCase();
+    private void resolveDontPassBet(CrapsPlayer player, double baseBet) {
+        CasinoAccount account = player.getArcadeAccount();
 
-            if (input.equals("y") || input.equals("yes")) {
-                return true;
-            } else if (input.equals("n") || input.equals("no")) {
-                return false;
+        account.debitAccount(baseBet);
+        System.out.printf("%s bets $%.2f on Don't Pass Line.%n", player.getName(), baseBet);
+
+        int comeOutRoll = rollDice();
+        System.out.println("Come-out roll: " + comeOutRoll);
+
+        if (comeOutRoll == 7 || comeOutRoll == 11) {
+            System.out.println("Seven or Eleven on Don't Pass. You LOSE.");
+            printBalance(account);
+            return;
+        }
+
+        if (comeOutRoll == 2 || comeOutRoll == 3) {
+            System.out.println("Don't Pass WINS on 2 or 3!");
+            account.creditAccount(baseBet * 2);
+            printBalance(account);
+            return;
+        }
+
+        if (comeOutRoll == 12) {
+            System.out.println("12 is a push on Don't Pass. Bet is returned.");
+            account.creditAccount(baseBet);
+            printBalance(account);
+            return;
+        }
+
+        int point = comeOutRoll;
+        System.out.println("Point is set to: " + point + " (Don't Pass wants 7 before point).");
+
+        double oddsBet = 0.0;
+        if (account.getAccountBalance() > 0 && promptYesNo("Place odds on Don't Pass Line? (y/n): ")) {
+            double maxOdds = Math.min(baseBet, account.getAccountBalance());
+            oddsBet = promptForOddsAmount(account, maxOdds);
+            if (oddsBet > 0) {
+                account.debitAccount(oddsBet);
+                System.out.printf("Odds bet of $%.2f placed behind Don't Pass.%n", oddsBet);
+            }
+        }
+
+        while (true) {
+            int roll = rollDice();
+            System.out.println("You rolled: " + roll);
+
+            if (roll == 7) {
+                System.out.println("Seven out! Don't Pass WINS!");
+                account.creditAccount(baseBet * 2);
+                if (oddsBet > 0) {
+                    double oddsWin = calculateDontPassOddsWin(point, oddsBet);
+                    account.creditAccount(oddsBet + oddsWin);
+                }
+                printBalance(account);
+                return;
+            } else if (roll == point) {
+                System.out.println("Point hit. Don't Pass loses.");
+                printBalance(account);
+                return;
             } else {
-                System.out.println("Please enter 'y' or 'n'.");
+                System.out.println("No decision, roll again...");
             }
         }
     }
 
+    private void resolveFieldBet(CrapsPlayer player, double bet) {
+        CasinoAccount account = player.getArcadeAccount();
 
-      private int rollDice() {
-        int die1 = random.nextInt(6) + 1; 
-        int die2 = random.nextInt(6) + 1; 
-        int sum = die1 + die2;
-        System.out.println("Dice: [" + die1 + "][" + die2 + "] (total " + sum + ")");
-        return sum;
+        account.debitAccount(bet);
+        System.out.printf("%s bets $%.2f on the Field.%n", player.getName(), bet);
+
+        int roll = rollDice();
+        System.out.println("Field roll: " + roll);
+
+        if (roll == 2) {
+            double win = bet * 2; 
+            System.out.println("2 rolled! Field pays 2:1.");
+            account.creditAccount(bet + win);
+        } else if (roll == 12) {
+            double win = bet * 3; 
+            System.out.println("12 rolled! Field pays 3:1.");
+            account.creditAccount(bet + win);
+        } else if (roll == 3 || roll == 4 || roll == 9 || roll == 10 || roll == 11) {
+            System.out.println("Field wins! Pays 1:1.");
+            account.creditAccount(bet * 2);
+        } else {
+            System.out.println("Field loses.");
+        }
+
+        printBalance(account);
     }
 
-    private void printBalance(CasinoAccount account) {
-        System.out.printf("New balance: $%.2f%n", account.getAccountBalance());
+    private void resolveComeBet(CrapsPlayer player, double bet) {
+        CasinoAccount account = player.getArcadeAccount();
+
+        account.debitAccount(bet);
+        System.out.printf("%s bets $%.2f on Come.%n", player.getName(), bet);
+
+        int roll = rollDice();
+        System.out.println("First roll for Come bet: " + roll);
+
+        if (roll == 7 || roll == 11) {
+            System.out.println("Come bet WINS on 7 or 11!");
+            account.creditAccount(bet * 2);
+            printBalance(account);
+            return;
+        }
+
+        if (roll == 2 || roll == 3 || roll == 12) {
+            System.out.println("Come bet loses on 2, 3, or 12.");
+            printBalance(account);
+            return;
+        }
+
+        int comePoint = roll;
+        System.out.println("Come point is set to: " + comePoint + ". Hit it again before 7 to win.");
+
+        while (true) {
+            int nextRoll = rollDice();
+            System.out.println("You rolled: " + nextRoll);
+            if (nextRoll == comePoint) {
+                System.out.println("Come point hit! Come bet WINS.");
+                account.creditAccount(bet * 2);
+                printBalance(account);
+                return;
+            } else if (nextRoll == 7) {
+                System.out.println("Seven out. Come bet loses.");
+                printBalance(account);
+                return;
+            } else {
+                System.out.println("No decision, roll again...");
+            }
+        }
     }
+
+    private void resolveDontComeBet(CrapsPlayer player, double bet) {
+        CasinoAccount account = player.getArcadeAccount();
+
+        account.debitAccount(bet);
+        System.out.printf("%s bets $%.2f on Don't Come.%n", player.getName(), bet);
+
+        int roll = rollDice();
+        System.out.println("First roll for Don't Come bet: " + roll);
+
+        if (roll == 7 || roll == 11) {
+            System.out.println("7 or 11 on Don't Come. You LOSE.");
+            printBalance(account);
+            return;
+        }
+
+        if (roll == 2 || roll == 3) {
+            System.out.println("Don't Come WINS on 2 or 3!");
+            account.creditAccount(bet * 2);
+            printBalance(account);
+            return;
+        }
+
+        if (roll == 12) {
+            System.out.println("12 is a push on Don't Come. Bet returned.");
+            account.creditAccount(bet);
+            printBalance(account);
+            return;
+        }
+
+        int dontComePoint = roll;
+        System.out.println("Don't Come point is set to: " + dontComePoint + ". 7 before point to win.");
+
+        while (true) {
+            int nextRoll = rollDice();
+            System.out.println("You rolled: " + nextRoll);
+            if (nextRoll == 7) {
+                System.out.println("Seven out! Don't Come WINS.");
+                account.creditAccount(bet * 2);
+                printBalance(account);
+                return;
+            } else if (nextRoll == dontComePoint) {
+                System.out.println("Point hit. Don't Come loses.");
+                printBalance(account);
+                return;
+            } else {
+                System.out.println("No decision, roll again...");
+            }
+        }
+    }
+
+    private void resolvePlaceBet(CrapsPlayer player, double bet) {
+        CasinoAccount account = player.getArcadeAccount();
+
+        int targetNumber = promptForPlaceNumber();
+        if (targetNumber == -1) {
+            System.out.println("Place bet cancelled.");
+            return;
+        }
+
+        account.debitAccount(bet);
+        System.out.printf("%s places $%.2f on %d.%n", player.getName(), bet, targetNumber);
+        System.out.println("Rolling until " + targetNumber + " (win) or 7 (lose).");
+
+        while (true) {
+            int roll = rollDice();
+            System.out.println("You rolled: " + roll);
+
+            if (roll == targetNumber) {
+                double win = calculatePlaceBetWin(targetNumber, bet);
+                System.out.printf("You hit %d! Place bet wins with appropriate odds.%n", targetNumber);
+                account.creditAccount(bet + win);
+                printBalance(account);
+                return;
+            } else if (roll == 7) {
+                System.out.println("Seven out. Place bet loses.");
+                printBalance(account);
+                return;
+            } else {
+                System.out.println("No decision, roll again...");
+            }
+        }
+    }
+
+    
+
+
+
 }
-
