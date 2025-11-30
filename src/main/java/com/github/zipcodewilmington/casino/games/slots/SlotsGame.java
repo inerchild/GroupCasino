@@ -28,16 +28,16 @@ public class SlotsGame implements GameInterface {
         System.out.println("║          🎰 WELCOME TO SLOTS 🎰               ║");
         System.out.println("╚═══════════════════════════════════════════════╝");
         System.out.println("\nSelect your theme:");
-        System.out.println("1. 🎰 Vegas Classic");
-        System.out.println("2. 🏴‍☠️ Pirate's Treasure");
-        System.out.println("3. 🚀 Space Adventure");
+        System.out.println("1. 🎰  Vegas Classic");
+        System.out.println("2. ⚔️  Pirate's Treasure");
+        System.out.println("3. 🚀  Space Adventure");
         System.out.print("\nChoice: ");
         
         String choice = scanner.nextLine().trim();
         
         switch (choice) {
             case "2":
-                System.out.println("\n🏴‍☠️ Ahoy, matey! Setting sail for treasure! 🏴‍☠️\n");
+                System.out.println("\n⚔️ Ahoy, matey! Setting sail for treasure! ⚔️\n");
                 return SymbolSet.createPirateSymbolSet();
             case "3":
                 System.out.println("\n🚀 Blast off to the stars! 🚀\n");
@@ -76,13 +76,36 @@ public class SlotsGame implements GameInterface {
     }
     
     private void displayWelcome() {
-        System.out.println("\n╔═══════════════════════════════════════════════╗");
-        System.out.println("║          🎰 WELCOME TO VEGAS SLOTS 🎰         ║");
-        System.out.println("╚═══════════════════════════════════════════════╝");
-        System.out.println("\n💎 Match symbols to win big prizes!");
-        System.out.println("💣 Watch out for BOMBS - they lose your bet!");
-        System.out.println("☠️  BEWARE: The Skull of Doom lurks in the shadows...\n");
+    System.out.println("\n╔═══════════════════════════════════════════════╗");
+    System.out.println("║          🎰 WELCOME TO VEGAS SLOTS 🎰         ║");
+    System.out.println("╚═══════════════════════════════════════════════╝");
+    
+    // Get the special symbols for this theme
+    List<Symbol> allSymbols = symbolSet.getAllSymbols();
+    Symbol bombSymbol = null;
+    Symbol doomSymbol = null;
+    Symbol highValueSymbol = null;
+    
+    for (Symbol symbol : allSymbols) {
+        String name = symbol.getName();
+        // Find the bomb equivalent
+        if (name.equals("Bomb") || name.equals("Kraken") || name.equals("Asteroid")) {
+            bombSymbol = symbol;
+        }
+        // Find the doom equivalent
+        if (name.equals("SkullOfDoom") || name.equals("Davy Jones") || name.equals("Black Hole")) {
+            doomSymbol = symbol;
+        }
+        // Find highest value symbol (multiplier 20)
+        if (symbol.getMultiplier() == 20) {
+            highValueSymbol = symbol;
+        }
     }
+    
+    System.out.println("\n" + (highValueSymbol != null ? highValueSymbol.getIcon() : "💎") + " Match symbols to win big prizes!");
+    System.out.println((bombSymbol != null ? bombSymbol.getIcon() : "💣") + " Watch out for " + (bombSymbol != null ? bombSymbol.getName().toUpperCase() : "BOMBS") + " - they lose your bet!");
+    System.out.println((doomSymbol != null ? doomSymbol.getIcon() : "☠️") + "  BEWARE: " + (doomSymbol != null ? doomSymbol.getName() : "Skull of Doom") + " lurks in the shadows...\n");
+}
     
     private void playWithPlayer(PlayerInterface player) {
         CasinoAccount account = player.getArcadeAccount();

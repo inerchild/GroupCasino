@@ -78,7 +78,7 @@ public class SymbolSet {
     symbols.add(new Symbol("🪙", 3, "Gold"));
     symbols.add(new Symbol("💰", 3, "Treasure"));
     symbols.add(new Symbol("🗡️", 4, "Sword"));
-    symbols.add(new Symbol("🏴‍☠️", 5, "Jolly Roger"));
+    symbols.add(new Symbol("⚔️", 5, "Crossed Swords"));
     symbols.add(new Symbol("🦜", 7, "Parrot"));
     symbols.add(new Symbol("⚓", 8, "Anchor"));
     symbols.add(new Symbol("🏴", 10, "Black Flag"));
