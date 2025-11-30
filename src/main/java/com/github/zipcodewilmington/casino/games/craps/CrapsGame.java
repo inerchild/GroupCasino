@@ -553,7 +553,63 @@ public class CrapsGame implements GameInterface{
         }
     }
 
-    
+      private double calculatePassOddsWin(int point, double oddsBet) {
+        switch (point) {
+            case 4:
+            case 10:
+                // pays 2:1
+                return oddsBet * 2.0;
+            case 5:
+            case 9:
+                // pays 3:2
+                return oddsBet * 3.0 / 2.0;
+            case 6:
+            case 8:
+                // pays 6:5
+                return oddsBet * 6.0 / 5.0;
+            default:
+                return 0.0;
+        }
+    }
+
+    private double calculateDontPassOddsWin(int point, double oddsBet) {
+        switch (point) {
+            case 4:
+            case 10:
+                // pays 1:2
+                return oddsBet / 2.0;
+            case 5:
+            case 9:
+                // pays 2:3
+                return oddsBet * 2.0 / 3.0;
+            case 6:
+            case 8:
+                // pays 5:6
+                return oddsBet * 5.0 / 6.0;
+            default:
+                return 0.0;
+        }
+    }
+
+    private double calculatePlaceBetWin(int number, double bet) {
+        switch (number) {
+            case 4:
+            case 10:
+                // typically 9:5
+                return bet * 9.0 / 5.0;
+            case 5:
+            case 9:
+                // typically 7:5
+                return bet * 7.0 / 5.0;
+            case 6:
+            case 8:
+                // typically 7:6
+                return bet * 7.0 / 6.0;
+            default:
+                return 0.0;
+        }
+    }
+
 
 
 
