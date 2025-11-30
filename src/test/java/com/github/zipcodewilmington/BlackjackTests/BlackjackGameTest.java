@@ -1,10 +1,6 @@
 package com.github.zipcodewilmington.BlackjackTests;
 
 import com.github.zipcodewilmington.casino.games.blackjack.BlackjackGame;
-import com.github.zipcodewilmington.utils.Card;
-import com.github.zipcodewilmington.utils.Deck;
-import com.github.zipcodewilmington.utils.Rank;
-import com.github.zipcodewilmington.utils.Suit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +16,7 @@ class BlackjackGameTest {
     private static final String PLAYER_NAME = "TestPlayer";
     private static final int STARTING_BALANCE = 1000;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    private final PrintStream originalOut = System.out;
+
 
     @BeforeEach
     void setUp() {
