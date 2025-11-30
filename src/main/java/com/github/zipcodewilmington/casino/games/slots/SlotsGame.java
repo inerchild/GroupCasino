@@ -76,51 +76,60 @@ public class SlotsGame implements GameInterface {
     }
     
     private void displayWelcome() {
-    // Determine theme name based on symbols
-    List<Symbol> allSymbols = symbolSet.getAllSymbols();
-    String themeName = "VEGAS SLOTS";
-    
-    // Check for theme-specific symbols
-    for (Symbol symbol : allSymbols) {
-        if (symbol.getName().equals("Kraken") || symbol.getName().equals("Davy Jones")) {
-            themeName = "PIRATE'S TREASURE";
-            break;
-        } else if (symbol.getName().equals("Asteroid") || symbol.getName().equals("Black Hole")) {
-            themeName = "SPACE ADVENTURE";
-            break;
+        // Determine theme name based on symbols
+        List<Symbol> allSymbols = symbolSet.getAllSymbols();
+        String themeName = "VEGAS SLOTS";
+        
+        // Check for theme-specific symbols
+        for (Symbol symbol : allSymbols) {
+            if (symbol.getName().equals("Kraken") || symbol.getName().equals("Davy Jones")) {
+                themeName = "PIRATE'S TREASURE";
+                break;
+            } else if (symbol.getName().equals("Asteroid") || symbol.getName().equals("Black Hole")) {
+                themeName = "SPACE ADVENTURE";
+                break;
+            }
         }
+        
+        // Create dynamic border
+        String title = "WELCOME TO " + themeName;
+        int totalWidth = title.length() + 10; // Add padding
+        String topBorder = "╔" + "═".repeat(totalWidth) + "╗";
+        String bottomBorder = "╚" + "═".repeat(totalWidth) + "╝";
+        
+        // Calculate padding to center the title
+        int padding = (totalWidth - title.length()) / 2;
+        String paddedTitle = "║" + " ".repeat(padding) + title + " ".repeat(totalWidth - title.length() - padding) + "║";
+        
+        System.out.println("\n" + topBorder);
+        System.out.println(paddedTitle);
+        System.out.println(bottomBorder);
+        
+        // Get the special symbols for this theme
+        Symbol bombSymbol = null;
+        Symbol doomSymbol = null;
+        Symbol highValueSymbol = null;
+        
+        for (Symbol symbol : allSymbols) {
+            String name = symbol.getName();
+            // Find the bomb equivalent
+            if (name.equals("Bomb") || name.equals("Kraken") || name.equals("Asteroid")) {
+                bombSymbol = symbol;
+            }
+            // Find the doom equivalent
+            if (name.equals("SkullOfDoom") || name.equals("Davy Jones") || name.equals("Black Hole")) {
+                doomSymbol = symbol;
+            }
+            // Find highest value symbol (multiplier 20)
+            if (symbol.getMultiplier() == 20) {
+                highValueSymbol = symbol;
+            }
+        }
+        
+        System.out.println("\n" + (highValueSymbol != null ? highValueSymbol.getIcon() : "💎") + " Match symbols to win big prizes!");
+        System.out.println((bombSymbol != null ? bombSymbol.getIcon() : "💣") + " Watch out for " + (bombSymbol != null ? bombSymbol.getName().toUpperCase() : "BOMBS") + " - they lose your bet!");
+        System.out.println((doomSymbol != null ? doomSymbol.getIcon() : "☠️") + "  BEWARE: " + (doomSymbol != null ? doomSymbol.getName() : "Skull of Doom") + " lurks in the shadows...\n");
     }
-    
-    System.out.println("\n╔═══════════════════════════════════════════════╗");
-    System.out.println("║           WELCOME TO " + themeName + "          ║");
-    System.out.println("╚═══════════════════════════════════════════════╝");
-    
-    // Get the special symbols for this theme
-    Symbol bombSymbol = null;
-    Symbol doomSymbol = null;
-    Symbol highValueSymbol = null;
-    
-    for (Symbol symbol : allSymbols) {
-        String name = symbol.getName();
-        // Find the bomb equivalent
-        if (name.equals("Bomb") || name.equals("Kraken") || name.equals("Asteroid")) {
-            bombSymbol = symbol;
-        }
-        // Find the doom equivalent
-        if (name.equals("SkullOfDoom") || name.equals("Davy Jones") || name.equals("Black Hole")) {
-            doomSymbol = symbol;
-        }
-        // Find highest value symbol (multiplier 20)
-        if (symbol.getMultiplier() == 20) {
-            highValueSymbol = symbol;
-        }
-    }
-    
-    System.out.println("\n" + (highValueSymbol != null ? highValueSymbol.getIcon() : "💎") + " Match symbols to win big prizes!");
-    System.out.println((bombSymbol != null ? bombSymbol.getIcon() : "💣") + " Watch out for " + (bombSymbol != null ? bombSymbol.getName().toUpperCase() : "BOMBS") + " - they lose your bet!");
-    System.out.println((doomSymbol != null ? doomSymbol.getIcon() : "☠️") + "  BEWARE: " + (doomSymbol != null ? doomSymbol.getName() : "Skull of Doom") + " lurks in the shadows...\n");
-}
-
     
     private void playWithPlayer(PlayerInterface player) {
         CasinoAccount account = player.getArcadeAccount();
@@ -225,7 +234,7 @@ public class SlotsGame implements GameInterface {
             }
             spinWithBet(account, betAmount);
         } catch (NumberFormatException e) {
-            System.out.println("❌ Invalid amount!");
+            System.out.println("Invalid amount!");
         }
     }
     
@@ -314,46 +323,46 @@ public class SlotsGame implements GameInterface {
     }
 
     private void changeTheme() {
-    System.out.println("\n╔═══════════════════════════════════════════════╗");
-    System.out.println("║            CHANGE THEME                   ║");
-    System.out.println("╚═══════════════════════════════════════════════╝");
-    System.out.println("\nSelect new theme:");
-    System.out.println("1. 🎰 Vegas Classic");
-    System.out.println("2. ⚔️ Pirate's Treasure");
-    System.out.println("3. 🚀 Space Adventure");
-    System.out.println("4. Cancel (keep current theme)");
-    System.out.print("\nChoice: ");
-    
-    String choice = scanner.nextLine().trim();
-    
-    SymbolSet newSymbolSet = null;
-    
-    switch (choice) {
-        case "1":
-            System.out.println("\n🎰 Switched to Vegas Classic! 🎰\n");
-            newSymbolSet = SymbolSet.createVegaSymbolSet();
-            break;
-        case "2":
-            System.out.println("\n⚔️   Ahoy! Switched to Pirate's Treasure!  ⚔️\n");
-            newSymbolSet = SymbolSet.createPirateSymbolSet();
-            break;
-        case "3":
-            System.out.println("\n🚀 Switched to Space Adventure! 🚀\n");
-            newSymbolSet = SymbolSet.createSpaceSymbolSet();
-            break;
-        case "4":
-            System.out.println("\n↩️ Keeping current theme.\n");
-            return;
-        default:
-            System.out.println("\nInvalid choice. Keeping current theme.\n");
-            return;
+        System.out.println("\n╔═══════════════════════════════════════════════╗");
+        System.out.println("║            CHANGE THEME                   ║");
+        System.out.println("╚═══════════════════════════════════════════════╝");
+        System.out.println("\nSelect new theme:");
+        System.out.println("1. 🎰 Vegas Classic");
+        System.out.println("2. ⚔️ Pirate's Treasure");
+        System.out.println("3. 🚀 Space Adventure");
+        System.out.println("4. Cancel (keep current theme)");
+        System.out.print("\nChoice: ");
+        
+        String choice = scanner.nextLine().trim();
+        
+        SymbolSet newSymbolSet = null;
+        
+        switch (choice) {
+            case "1":
+                System.out.println("\n🎰 Switched to Vegas Classic! 🎰\n");
+                newSymbolSet = SymbolSet.createVegaSymbolSet();
+                break;
+            case "2":
+                System.out.println("\n⚔️   Ahoy! Switched to Pirate's Treasure!  ⚔️\n");
+                newSymbolSet = SymbolSet.createPirateSymbolSet();
+                break;
+            case "3":
+                System.out.println("\n🚀 Switched to Space Adventure! 🚀\n");
+                newSymbolSet = SymbolSet.createSpaceSymbolSet();
+                break;
+            case "4":
+                System.out.println("\n↩️ Keeping current theme.\n");
+                return;
+            default:
+                System.out.println("\nInvalid choice. Keeping current theme.\n");
+                return;
+        }
+        
+        // Update to new theme
+        if (newSymbolSet != null) {
+            this.symbolSet = newSymbolSet;
+            this.slotMachine = new SlotMachine(symbolSet);
+            displayWelcome();
+        }
     }
-    
-    // Update to new theme
-    if (newSymbolSet != null) {
-        this.symbolSet = newSymbolSet;
-        this.slotMachine = new SlotMachine(symbolSet);
-        displayWelcome();
-    }
-}
 }
