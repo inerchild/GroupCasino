@@ -6,6 +6,8 @@ import com.github.zipcodewilmington.casino.GameInterface;
 import com.github.zipcodewilmington.casino.PlayerInterface;
 import com.github.zipcodewilmington.casino.games.numberguess.NumberGuessGame;
 import com.github.zipcodewilmington.casino.games.numberguess.NumberGuessPlayer;
+import com.github.zipcodewilmington.casino.games.tictactoe.TicTacToeGame;
+import com.github.zipcodewilmington.casino.games.tictactoe.HumanPlayer;
 import com.github.zipcodewilmington.casino.games.slots.SlotsGame;
 import com.github.zipcodewilmington.casino.games.slots.SlotsPlayer;
 import com.github.zipcodewilmington.casino.games.craps.CrapsGame;
@@ -14,6 +16,7 @@ import com.github.zipcodewilmington.casino.games.war.WarGame;
 import com.github.zipcodewilmington.casino.games.war.WarPlayer;
 import com.github.zipcodewilmington.utils.AnsiColor;
 import com.github.zipcodewilmington.utils.IOConsole;
+
 
 /**
  * Created by leon on 7/21/2020.
@@ -25,50 +28,82 @@ public class Casino implements Runnable {
     public void run() {
         String arcadeDashBoardInput;
         CasinoAccountManager casinoAccountManager = new CasinoAccountManager();
+        CasinoAccount currentAccount = null;
+        String accountName = "";
+        String accountPassword= "";
+        casinoAccountManager.loadAccounts("accounts.json");
         do {
-            arcadeDashBoardInput = getArcadeDashboardInput();
-            if ("select-game".equals(arcadeDashBoardInput)) {
-                String accountName = console.getStringInput("Enter your account name:");
-                String accountPassword = console.getStringInput("Enter your account password:");
-                CasinoAccount casinoAccount = casinoAccountManager.getAccount(accountName, accountPassword);
-                boolean isValidLogin = casinoAccount != null;
-                if (isValidLogin) {
-                    String gameSelectionInput = getGameSelectionInput().toUpperCase();
-                    if (gameSelectionInput.equals("SLOTS")) {
-                        play(new SlotsGame(), new SlotsPlayer());
-                    } else if (gameSelectionInput.equals("NUMBERGUESS")) {
-                        play(new NumberGuessGame(), new NumberGuessPlayer());
-                    } else if (gameSelectionInput.equals("CRAPS")) {
-                        CrapsGame crapsGame = new CrapsGame();
-                        CrapsPlayer crapsPlayer = new CrapsPlayer(accountName, casinoAccount);
-                        play(crapsGame, crapsPlayer);
-                    } else if (gameSelectionInput.equals("WAR")) {
-                        play(new WarGame(), new WarPlayer(casinoAccount));
-                    } else {
-                        // TODO - implement better exception handling
-                        String errorMessage = "[ %s ] is an invalid game selection";
-                        throw new RuntimeException(String.format(errorMessage, gameSelectionInput));
-                    }
+            if (currentAccount == null) {
+                arcadeDashBoardInput = getLoginDashboardInput();
+                if ("login".equals(arcadeDashBoardInput)) {
+                    accountName = console.getStringInput("Enter your account name:");
+                    accountPassword = console.getStringInput("Enter your account password:");
+                    currentAccount = casinoAccountManager.getAccount(accountName, accountPassword);
+                } else if ("create-account".equals(arcadeDashBoardInput)) {
+                    console.println("Welcome to the account-creation screen.");
+                    accountName = console.getStringInput("Enter your account name:");
+                    accountPassword = console.getStringInput("Enter your account password:");
+                    CasinoAccount newAccount = casinoAccountManager.createAccount(accountName, accountPassword);
+                    casinoAccountManager.registerAccount(newAccount);
                 } else {
-                    // TODO - implement better exception handling
-                    String errorMessage = "No account found with name of [ %s ] and password of [ %s ]";
-                    throw new RuntimeException(String.format(errorMessage, accountPassword, accountName));
+                    console.println("Invalid Command.");
                 }
-            } else if ("create-account".equals(arcadeDashBoardInput)) {
-                console.println("Welcome to the account-creation screen.");
-                String accountName = console.getStringInput("Enter your account name:");
-                String accountPassword = console.getStringInput("Enter your account password:");
-                CasinoAccount newAccount = casinoAccountManager.createAccount(accountName, accountPassword);
-                casinoAccountManager.registerAccount(newAccount);
+            } else {
+                arcadeDashBoardInput = getArcadeDashboardInput();
+                if ("select-game".equals(arcadeDashBoardInput)) {
+                    boolean isValidLogin = currentAccount != null;
+                    if (isValidLogin) {
+                        String gameSelectionInput = getGameSelectionInput().toUpperCase();
+                        if (gameSelectionInput.equals("SLOTS")) {
+                            SlotsGame slotsGame = new SlotsGame();
+                            SlotsPlayer slotsPlayer = new SlotsPlayer(currentAccount, slotsGame.getSlotMachine());
+                            play(slotsGame, slotsPlayer);
+                        } else if (gameSelectionInput.equals("NUMBERGUESS")) {
+                            play(new NumberGuessGame(), new NumberGuessPlayer());
+                        } else if (gameSelectionInput.equals("CRAPS")) {
+                            CrapsGame crapsGame = new CrapsGame();
+                            CrapsPlayer crapsPlayer = new CrapsPlayer(accountName, currentAccount);
+                            play(crapsGame, crapsPlayer);
+                        } else if (gameSelectionInput.equals("WAR")) {
+                            play(new WarGame(), new WarPlayer(currentAccount));
+                        } else if (gameSelectionInput.equals("TICTACTOE")) {
+                            play(new TicTacToeGame(), new HumanPlayer(currentAccount));
+                        } else {
+                            String errorMessage = "[ %s ] is an invalid game selection";
+                            console.println(String.format(errorMessage, gameSelectionInput));
+                        }
+                    }
+                } else if ("logout".equals(arcadeDashBoardInput)) {
+                    currentAccount = null;
+                } else if ("deposit".equals(arcadeDashBoardInput)) {
+                    double deposit = getMoneyAmount();
+                    depositAccount(currentAccount, deposit);
+                    console.println(currentAccount.getAccountName() + " now has " + currentAccount.getAccountBalance() + " credits");
+                } else if ("withdraw".equals(arcadeDashBoardInput)) {
+                    double withdraw = getMoneyAmount();
+                    withdrawAccount(currentAccount, withdraw);
+                    console.println(currentAccount.getAccountName() + " now has " + currentAccount.getAccountBalance() + " credits");
+                } else {
+                    console.println("Invalid Command.");
+                }
             }
-        } while (!"logout".equals(arcadeDashBoardInput));
+            casinoAccountManager.saveAccounts("accounts.json");
+        } while (!"exit".equals(arcadeDashBoardInput));
+    }
+
+    private String getLoginDashboardInput() {
+        return console.getStringInput(new StringBuilder()
+                .append("Welcome to the Arcade Dashboard!")
+                .append("\nFrom here, you can select any of the following options:")
+                .append("\n\t[ create-account ], [login]")
+                .toString());
     }
 
     private String getArcadeDashboardInput() {
         return console.getStringInput(new StringBuilder()
                 .append("Welcome to the Arcade Dashboard!")
                 .append("\nFrom here, you can select any of the following options:")
-                .append("\n\t[ create-account ], [ select-game ]")
+                .append("\n\t[select-game], [deposit], [withdraw], [logout]")
                 .toString());
     }
 
@@ -76,7 +111,7 @@ public class Casino implements Runnable {
         return console.getStringInput(new StringBuilder()
                 .append("Welcome to the Game Selection Dashboard!")
                 .append("\nFrom here, you can select any of the following options:")
-                .append("\n\t[ SLOTS ], [ NUMBERGUESS ], [ WAR ], [ CRAPS ]")
+                .append("\n\t[ SLOTS ], [ NUMBERGUESS ], [ WAR ], [ CRAPS ], [TICTACTOE]")
                 .toString());
     }
 
@@ -85,5 +120,19 @@ public class Casino implements Runnable {
         PlayerInterface player = (PlayerInterface)playerObject;
         game.add(player);
         game.run();
+    }
+
+    private double getMoneyAmount() {
+        return Double.valueOf(console.getStringInput(new StringBuilder()
+                .append("How many credits?")
+                .toString()));
+    }
+
+    private void depositAccount (CasinoAccount casinoAccount, double amount) {
+        casinoAccount.creditAccount(amount);
+    }
+
+    private void withdrawAccount (CasinoAccount casinoAccount, double amount) {
+        casinoAccount.debitAccount(amount);
     }
 }
