@@ -137,7 +137,7 @@ public class CrapsGame implements GameInterface{
         System.out.println("Craps game over.");
     }
 
-     private BetType promptForBetType() {
+    private BetType promptForBetType() {
         while (true) {
             System.out.println("\nChoose your bet type:");
             System.out.println("1. Pass Line");

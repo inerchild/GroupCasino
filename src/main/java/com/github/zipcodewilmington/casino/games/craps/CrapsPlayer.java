@@ -16,12 +16,14 @@ public class CrapsPlayer implements PlayerInterface{
     public String getName() {
         return name;
     }
-
+    
+    @Override
     public CasinoAccount getArcadeAccount() {
         return casinoAccount;
     }
    
-    public Boolean play() {
-        return true; 
-    }
+    @Override
+    public <SomeReturnType> SomeReturnType play() {
+        return null;
+}
 }
