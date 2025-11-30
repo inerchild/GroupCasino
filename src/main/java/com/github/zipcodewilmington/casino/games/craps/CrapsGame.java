@@ -275,7 +275,7 @@ public class CrapsGame implements GameInterface{
     }
 
 
-     private void resolvePassLineBet(CrapsPlayer player, double baseBet) {
+     public void resolvePassLineBet(CrapsPlayer player, double baseBet) {
         CasinoAccount account = player.getArcadeAccount();
 
         account.debitAccount(baseBet);
@@ -335,7 +335,7 @@ public class CrapsGame implements GameInterface{
         }
     }
 
-    private void resolveDontPassBet(CrapsPlayer player, double baseBet) {
+    public void resolveDontPassBet(CrapsPlayer player, double baseBet) {
         CasinoAccount account = player.getArcadeAccount();
 
         account.debitAccount(baseBet);
@@ -400,7 +400,7 @@ public class CrapsGame implements GameInterface{
         }
     }
 
-    private void resolveFieldBet(CrapsPlayer player, double bet) {
+    public void resolveFieldBet(CrapsPlayer player, double bet) {
         CasinoAccount account = player.getArcadeAccount();
 
         account.debitAccount(bet);
@@ -427,7 +427,7 @@ public class CrapsGame implements GameInterface{
         printBalance(account);
     }
 
-    private void resolveComeBet(CrapsPlayer player, double bet) {
+    public void resolveComeBet(CrapsPlayer player, double bet) {
         CasinoAccount account = player.getArcadeAccount();
 
         account.debitAccount(bet);
@@ -470,7 +470,7 @@ public class CrapsGame implements GameInterface{
         }
     }
 
-    private void resolveDontComeBet(CrapsPlayer player, double bet) {
+    public void resolveDontComeBet(CrapsPlayer player, double bet) {
         CasinoAccount account = player.getArcadeAccount();
 
         account.debitAccount(bet);
@@ -520,7 +520,7 @@ public class CrapsGame implements GameInterface{
         }
     }
 
-    private void resolvePlaceBet(CrapsPlayer player, double bet) {
+    public void resolvePlaceBet(CrapsPlayer player, double bet) {
         CasinoAccount account = player.getArcadeAccount();
 
         int targetNumber = promptForPlaceNumber();
@@ -601,7 +601,7 @@ public class CrapsGame implements GameInterface{
         }
     }
 
-     private int rollDice() {
+    protected int rollDice() {
         int die1 = random.nextInt(6) + 1;
         int die2 = random.nextInt(6) + 1;
         int sum = die1 + die2;
@@ -612,5 +612,4 @@ public class CrapsGame implements GameInterface{
     private void printBalance(CasinoAccount account) {
         System.out.printf("New balance: $%.2f%n", account.getAccountBalance());
     }
-
 }
