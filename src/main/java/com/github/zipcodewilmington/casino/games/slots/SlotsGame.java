@@ -177,7 +177,7 @@ public class SlotsGame implements GameInterface {
                     changeTheme();
                     break;
                 case "7":
-                    System.out.println("\n👋 Thanks for playing! Final balance: $" 
+                    System.out.println("\nThanks for playing! Final balance: $" 
                         + String.format("%.2f", account.getAccountBalance()));
                     return;
                 default:
