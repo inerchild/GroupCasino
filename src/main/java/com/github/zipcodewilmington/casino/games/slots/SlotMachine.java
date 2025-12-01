@@ -189,11 +189,11 @@ public class SlotMachine {
         return sb.toString();
     }
     
-    /**
-     * 💀 ULTIMATE DOOM EASTER EGG 💀
-     * Triggers dramatic game ending when ultimate doom symbol appears
-     * This will close the ENTIRE program!
-     */
+
+    //  SKULL OF DOOM EASTER EGG 
+     //Triggers dramatic game ending when ultimate doom symbol appears
+     //This will close the ENTIRE program!
+     
     private void triggerSkullOfDoom() {
         // Determine which symbol triggered it
         String doomSymbol = "";
