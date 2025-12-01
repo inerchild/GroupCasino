@@ -86,20 +86,6 @@ public class NumberGuessGame implements GameInterface {
         currentAttempts++;
     }
 
-    public class TestGame {
-        public static void main(String[] args) {
-        // create a test account and player
-        CasinoAccount account = new CasinoAccount("TestPlayer", "password"); 
-        NumberGuessPlayer player = new NumberGuessPlayer(account);
-
-        // create and run the game
-        NumberGuessGame game = new NumberGuessGame();
-        game.add(player);
-        game.run();
-
-        }
-    }
-
     private void printVictoryCelebration(String playerName, int attempts) {
         try {
             for (int i = 0; i < 6; i++) {
@@ -166,7 +152,6 @@ public class NumberGuessGame implements GameInterface {
         }
 
         this.secretNumber = (int)(Math.random() * maxRange) + 1;
-        System.out.println("Debug: Secret number is " + secretNumber);
 
         System.out.println("I'm thinking of a number between 1 and " + maxRange + "...");
         System.out.println("You have " + maxAttempts + " attempts. ");
