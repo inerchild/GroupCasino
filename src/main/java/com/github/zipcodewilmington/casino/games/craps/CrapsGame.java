@@ -359,7 +359,7 @@ public class CrapsGame implements GameInterface{
         System.out.println("Point is set to: " + point);
         currentPoint = point;
         addToHistory(point, "Point established");
-
+        printPointStatus();
 
         double oddsBet = 0.0;
         if (account.getAccountBalance() > 0 && promptYesNo("Place odds on Pass Line? (y/n): ")) {
@@ -368,12 +368,14 @@ public class CrapsGame implements GameInterface{
             if (oddsBet > 0) {
                 account.debitAccount(oddsBet);
                 System.out.printf("Odds bet of $%.2f placed behind Pass Line.%n", oddsBet);
+                addToHistory(-1, "Odds bet placed: $" + oddsBet);
             }
         }
 
         System.out.println("Keep rolling: hit " + point + " to win, or 7 to lose.");
 
         while (true) {
+            printPointStatus();  
             int roll = rollDice();
             System.out.println("You rolled: " + roll);
 
@@ -439,6 +441,7 @@ public class CrapsGame implements GameInterface{
         System.out.println("Point is set to: " + point + " (Don't Pass wants 7 before point).");
         currentPoint = point;
         addToHistory(point, "Point established (Don't Pass)");
+        printPointStatus();  
 
         double oddsBet = 0.0;
         if (account.getAccountBalance() > 0 && promptYesNo("Place odds on Don't Pass Line? (y/n): ")) {
@@ -447,10 +450,12 @@ public class CrapsGame implements GameInterface{
             if (oddsBet > 0) {
                 account.debitAccount(oddsBet);
                 System.out.printf("Odds bet of $%.2f placed behind Don't Pass.%n", oddsBet);
+                addToHistory(-1, "Odds bet placed: $" + oddsBet);
             }
         }
 
         while (true) {
+            printPointStatus();
             int roll = rollDice();
             System.out.println("You rolled: " + roll);
 
@@ -498,8 +503,10 @@ public class CrapsGame implements GameInterface{
         } else if (roll == 3 || roll == 4 || roll == 9 || roll == 10 || roll == 11) {
             System.out.println("Field WIN! Pays 1:1.");
             account.creditAccount(bet * 2);
+            addToHistory(roll, "Field bet WIN 1:1");
         } else {
             System.out.println("Field loses.");
+            addToHistory(roll, "Field bet LOSS");
         }
 
         printBalance(account);
@@ -519,12 +526,14 @@ public class CrapsGame implements GameInterface{
             System.out.println("Come bet WINS on 7 or 11!");
             account.creditAccount(bet * 2);
             printBalance(account);
+            addToHistory(roll, "Come WIN on 7 or 11");
             return;
         }
 
         if (roll == 2 || roll == 3 || roll == 12) {
             System.out.println("Come bet loses on 2, 3, or 12.");
             printBalance(account);
+            addToHistory(roll, "Come LOSE on craps number");
             return;
         }
 
@@ -565,6 +574,7 @@ public class CrapsGame implements GameInterface{
         if (roll == 7 || roll == 11) {
             System.out.println("7 or 11 on Don't Come. You LOSE.");
             printBalance(account);
+            addToHistory(roll, "Don't Come LOSE on 7/11");
             return;
         }
 
@@ -572,6 +582,7 @@ public class CrapsGame implements GameInterface{
             System.out.println("Don't Come WINS on 2 or 3!");
             account.creditAccount(bet * 2);
             printBalance(account);
+            addToHistory(roll, "Don't Come WIN on 2 or 3");
             return;
         }
 
@@ -579,6 +590,7 @@ public class CrapsGame implements GameInterface{
             System.out.println("12 is a push on Don't Come. Bet returned.");
             account.creditAccount(bet);
             printBalance(account);
+            addToHistory(roll, "Don't Come PUSH on 12");
             return;
         }
 
@@ -764,6 +776,9 @@ public class CrapsGame implements GameInterface{
             }
 
             System.out.println("Total: " + sum + "\n");
+            System.out.print("Press ENTER to continue...");
+            scanner.nextLine();
+            System.out.println();
         }
 
         private void showRollingAnimation() {
