@@ -1,7 +1,7 @@
 [ {
   "accountName" : "Test",
   "accountPassword" : "Test",
-  "accountBalance" : 1840.0
+  "accountBalance" : 2000.0
 }, {
   "accountName" : "Alice",
   "accountPassword" : "1234",
