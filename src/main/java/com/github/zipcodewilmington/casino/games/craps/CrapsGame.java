@@ -614,7 +614,10 @@ public class CrapsGame implements GameInterface{
     }
 
 
+        
         protected int rollDice() {
+            showRollingAnimation();
+
             int die1 = random.nextInt(6) + 1;
             int die2 = random.nextInt(6) + 1;
             int sum = die1 + die2;
@@ -625,12 +628,32 @@ public class CrapsGame implements GameInterface{
         }
 
         private void printDice(int d1, int d2, int sum) {
-            String die1 = diceFace(d1);
-            String die2 = diceFace(d2);
+            String[] die1Lines = diceFace(d1).split("\n");
+            String[] die2Lines = diceFace(d2).split("\n");
 
             System.out.println("\nYour roll:");
-            System.out.println(die1 + "   " + die2);
+
+            for (int i = 0; i < die1Lines.length; i++) {
+                System.out.println(die1Lines[i] + "   " + die2Lines[i]);
+            }
+
             System.out.println("Total: " + sum + "\n");
+        }
+
+        private void showRollingAnimation() {
+            try {
+                String[] frames = { "Rolling.", "Rolling..", "Rolling..." };
+
+                for (String frame : frames) {
+                    System.out.print("\r" + frame);
+                    Thread.sleep(200);  
+                }
+
+                System.out.print("\r"); 
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
 
         private String diceFace(int n) {
