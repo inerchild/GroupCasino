@@ -74,10 +74,10 @@ public class CrapsGame implements GameInterface{
                     continue;
                 }
 
-                System.out.println("\n----------------------  PLAYER INFO  ------------------------");
-                System.out.println("Player: " + player.getName());
-                System.out.printf("Balance: $%.2f%n", account.getAccountBalance());
-                System.out.println("-------------------------------------------------------------\n");
+                printHeader("PLAYER INFO");
+                printCentered("Player: " + player.getName(), 60);
+                printCentered(String.format("Balance: $%.2f", account.getAccountBalance()), 60);
+                System.out.println();
 
                 printCrapsTable();
                 BetType betType = promptForBetType();
@@ -652,6 +652,25 @@ public class CrapsGame implements GameInterface{
         }
     }
 
+    private void printCentered(String message, int width) {
+        if (message == null) message = "";
+
+        int padding = (width - message.length()) / 2;
+        if (padding < 0) padding = 0;
+
+        String spaces = " ".repeat(padding);
+        System.out.println(spaces + message);
+    }
+
+    private void printHeader(String title) {
+        int width = 60;
+
+        String line = "=".repeat(width);
+        System.out.println(line);
+        printCentered(title, width);
+        System.out.println(line);
+    }
+
     private void printRollHistory() {
     if (rollHistory.isEmpty()) {
         return;
@@ -736,7 +755,9 @@ public class CrapsGame implements GameInterface{
             String[] die1Lines = diceFace(d1).split("\n");
             String[] die2Lines = diceFace(d2).split("\n");
 
-            System.out.println("\nYour roll:");
+            System.out.println();
+            printHeader("ROLL");
+
 
             for (int i = 0; i < die1Lines.length; i++) {
                 System.out.println(die1Lines[i] + "   " + die2Lines[i]);
@@ -809,15 +830,17 @@ public class CrapsGame implements GameInterface{
     }
 
     private void printCrapsTable() {
-        System.out.println(
-                "========================= CRAPS TABLE ========================\n" +
-                "| PASS LINE | COME | FIELD | DON'T PASS | PLACE BETS         |\n" +
-                "--------------------------------------------------------------\n" +
-                "| Field: Wins on 2,3,4,9,10,11 (2 pays 2:1, 12 pays 3:1)     |\n" +
-                "| Pass Line: Win on 7/11, Lose on 2/3/12, otherwise point    |\n" +
-                "| Place Bets: Choose numbers 4,5,6,8,9,10                    |\n" +
-                "==============================================================\n"
-        );
-        printPointStatus();
-    }
+    printHeader("CRAPS TABLE");
+
+    System.out.println(
+            "| PASS LINE | COME | FIELD | DON'T PASS | PLACE BETS         |\n" +
+            "--------------------------------------------------------------\n" +
+            "| Field: Wins on 2,3,4,9,10,11 (2 pays 2:1, 12 pays 3:1)     |\n" +
+            "| Pass Line: Win on 7/11, Lose on 2/3/12, otherwise point    |\n" +
+            "| Place Bets: Choose numbers 4,5,6,8,9,10                    |\n"
+    );
+
+    printHeader("POINT STATUS");
+    printPointStatus();
+}
 }
