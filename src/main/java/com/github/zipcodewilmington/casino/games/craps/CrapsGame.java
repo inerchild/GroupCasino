@@ -26,7 +26,7 @@ public class CrapsGame implements GameInterface{
     private final List<CrapsPlayer> players = new ArrayList<>();
     private final Scanner scanner;
     private final Random random = new Random();
-
+    private Integer currentPoint = null;
     
     public CrapsGame() {
         this(new Scanner(System.in));
@@ -286,8 +286,7 @@ public class CrapsGame implements GameInterface{
         }
     }
 
-
-     public void resolvePassLineBet(CrapsPlayer player, double baseBet) {
+    public void resolvePassLineBet(CrapsPlayer player, double baseBet) {
         CasinoAccount account = player.getArcadeAccount();
 
         account.debitAccount(baseBet);
@@ -300,17 +299,20 @@ public class CrapsGame implements GameInterface{
             System.out.println("You rolled a natural! Pass Line WINS!");
             account.creditAccount(baseBet * 2);
             printBalance(account);
+            currentPoint = null;
             return;
         }
 
         if (comeOutRoll == 2 || comeOutRoll == 3 || comeOutRoll == 12) {
             System.out.println("Craps! Pass Line loses.");
             printBalance(account);
+            currentPoint = null;
             return;
         }
 
         int point = comeOutRoll;
         System.out.println("Point is set to: " + point);
+        currentPoint = point;
 
         double oddsBet = 0.0;
         if (account.getAccountBalance() > 0 && promptYesNo("Place odds on Pass Line? (y/n): ")) {
@@ -336,10 +338,12 @@ public class CrapsGame implements GameInterface{
                     account.creditAccount(oddsBet + oddsWin);
                 }
                 printBalance(account);
+                currentPoint = null;
                 return;
             } else if (roll == 7) {
                 System.out.println("Seven out! Pass Line loses.");
                 printBalance(account);
+                currentPoint = null;
                 return;
             } else {
                 System.out.println("No decision, roll again...");
@@ -359,6 +363,7 @@ public class CrapsGame implements GameInterface{
         if (comeOutRoll == 7 || comeOutRoll == 11) {
             System.out.println("Seven or Eleven on Don't Pass. You LOSE.");
             printBalance(account);
+            currentPoint = null;
             return;
         }
 
@@ -366,6 +371,7 @@ public class CrapsGame implements GameInterface{
             System.out.println("Don't Pass WINS on 2 or 3!");
             account.creditAccount(baseBet * 2);
             printBalance(account);
+            currentPoint = null;
             return;
         }
 
@@ -373,11 +379,13 @@ public class CrapsGame implements GameInterface{
             System.out.println("12 is a push on Don't Pass. Bet is returned.");
             account.creditAccount(baseBet);
             printBalance(account);
+            currentPoint = null;
             return;
         }
 
         int point = comeOutRoll;
         System.out.println("Point is set to: " + point + " (Don't Pass wants 7 before point).");
+        currentPoint = point;
 
         double oddsBet = 0.0;
         if (account.getAccountBalance() > 0 && promptYesNo("Place odds on Don't Pass Line? (y/n): ")) {
@@ -401,10 +409,12 @@ public class CrapsGame implements GameInterface{
                     account.creditAccount(oddsBet + oddsWin);
                 }
                 printBalance(account);
+                currentPoint = null;
                 return;
             } else if (roll == point) {
                 System.out.println("Point hit. Don't Pass loses.");
                 printBalance(account);
+                currentPoint = null;
                 return;
             } else {
                 System.out.println("No decision, roll again...");
@@ -613,7 +623,13 @@ public class CrapsGame implements GameInterface{
         }
     }
 
-
+    private void printPointStatus() {
+        if (currentPoint == null) {
+            System.out.println("POINT: OFF\n");
+        } else {
+            System.out.println("POINT: [ " + currentPoint + " ]\n");
+        }
+    }
         
         protected int rollDice() {
             showRollingAnimation();
@@ -713,5 +729,6 @@ public class CrapsGame implements GameInterface{
                 "| Place Bets: Choose numbers 4,5,6,8,9,10                    |\n" +
                 "==============================================================\n"
         );
+        printPointStatus();
     }
 }
