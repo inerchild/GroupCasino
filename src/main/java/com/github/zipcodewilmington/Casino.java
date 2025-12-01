@@ -63,7 +63,7 @@ public class Casino implements Runnable {
                             SlotsPlayer slotsPlayer = new SlotsPlayer(currentAccount, slotsGame.getSlotMachine());
                             play(slotsGame, slotsPlayer);
                         } else if (gameSelectionInput.equals("NUMBERGUESS")) {
-                            play(new NumberGuessGame(), new NumberGuessPlayer());
+                            play(new NumberGuessGame(), new NumberGuessPlayer(currentAccount));
                         } else if (gameSelectionInput.equals("CRAPS")) {
                             CrapsGame crapsGame = new CrapsGame();
                             CrapsPlayer crapsPlayer = new CrapsPlayer(accountName, currentAccount);
