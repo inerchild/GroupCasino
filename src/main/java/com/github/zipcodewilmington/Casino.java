@@ -25,6 +25,13 @@ public class Casino implements Runnable {
     public void run() {
         String arcadeDashBoardInput;
         CasinoAccountManager casinoAccountManager = new CasinoAccountManager();
+
+        //Add these lines - pre-create demo account
+        CasinoAccount demoAccount = new CasinoAccount("Frank", "zipcode0");
+        casinoAccountManager.registerAccount(demoAccount);
+
+
+        
         do {
             arcadeDashBoardInput = getArcadeDashboardInput();
             if ("select-game".equals(arcadeDashBoardInput)) {
@@ -37,7 +44,7 @@ public class Casino implements Runnable {
                     if (gameSelectionInput.equals("SLOTS")) {
                         play(new SlotsGame(), new SlotsPlayer());
                     } else if (gameSelectionInput.equals("NUMBERGUESS")) {
-                        play(new NumberGuessGame(), new NumberGuessPlayer());
+                        play(new NumberGuessGame(), new NumberGuessPlayer(casinoAccount));
                     } else if (gameSelectionInput.equals("CRAPS")) {
                         CrapsGame crapsGame = new CrapsGame();
                         CrapsPlayer crapsPlayer = new CrapsPlayer(accountName, casinoAccount);
