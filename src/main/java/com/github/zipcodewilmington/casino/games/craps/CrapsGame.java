@@ -27,6 +27,8 @@ public class CrapsGame implements GameInterface{
     private final Scanner scanner;
     private final Random random = new Random();
     private Integer currentPoint = null;
+    private final List<String> rollHistory = new ArrayList<>();
+
     
     public CrapsGame() {
         this(new Scanner(System.in));
@@ -300,6 +302,7 @@ public class CrapsGame implements GameInterface{
             account.creditAccount(baseBet * 2);
             printBalance(account);
             currentPoint = null;
+            addToHistory(comeOutRoll, "Natural! Pass Line WIN");
             return;
         }
 
@@ -307,12 +310,15 @@ public class CrapsGame implements GameInterface{
             System.out.println("Craps! Pass Line loses.");
             printBalance(account);
             currentPoint = null;
+            addToHistory(comeOutRoll, "Craps out! Pass Line LOSE");
             return;
         }
 
         int point = comeOutRoll;
         System.out.println("Point is set to: " + point);
         currentPoint = point;
+        addToHistory(point, "Point established");
+
 
         double oddsBet = 0.0;
         if (account.getAccountBalance() > 0 && promptYesNo("Place odds on Pass Line? (y/n): ")) {
@@ -339,11 +345,13 @@ public class CrapsGame implements GameInterface{
                 }
                 printBalance(account);
                 currentPoint = null;
+                addToHistory(roll, "Point made! Pass Line WIN");
                 return;
             } else if (roll == 7) {
                 System.out.println("Seven out! Pass Line loses.");
                 printBalance(account);
                 currentPoint = null;
+                addToHistory(roll, "Seven-out! Pass Line LOSE");
                 return;
             } else {
                 System.out.println("No decision, roll again...");
@@ -364,6 +372,7 @@ public class CrapsGame implements GameInterface{
             System.out.println("Seven or Eleven on Don't Pass. You LOSE.");
             printBalance(account);
             currentPoint = null;
+            addToHistory(comeOutRoll, "Natural! Don't Pass LOSE");
             return;
         }
 
@@ -372,6 +381,7 @@ public class CrapsGame implements GameInterface{
             account.creditAccount(baseBet * 2);
             printBalance(account);
             currentPoint = null;
+            addToHistory(comeOutRoll, "Don't Pass WIN on 2 or 3");
             return;
         }
 
@@ -380,12 +390,14 @@ public class CrapsGame implements GameInterface{
             account.creditAccount(baseBet);
             printBalance(account);
             currentPoint = null;
+            addToHistory(comeOutRoll, "Push on 12 (Don't Pass)");
             return;
         }
 
         int point = comeOutRoll;
         System.out.println("Point is set to: " + point + " (Don't Pass wants 7 before point).");
         currentPoint = point;
+        addToHistory(point, "Point established (Don't Pass)");
 
         double oddsBet = 0.0;
         if (account.getAccountBalance() > 0 && promptYesNo("Place odds on Don't Pass Line? (y/n): ")) {
@@ -410,11 +422,13 @@ public class CrapsGame implements GameInterface{
                 }
                 printBalance(account);
                 currentPoint = null;
+                addToHistory(roll, "Seven-out! Don't Pass WIN");
                 return;
             } else if (roll == point) {
                 System.out.println("Point hit. Don't Pass loses.");
                 printBalance(account);
                 currentPoint = null;
+                addToHistory(roll, "Point hit! Don't Pass LOSE");
                 return;
             } else {
                 System.out.println("No decision, roll again...");
@@ -430,6 +444,7 @@ public class CrapsGame implements GameInterface{
 
         int roll = rollDice();
         System.out.println("Field roll: " + roll);
+        addToHistory(roll, "Field roll");
 
         if (roll == 2) {
             double win = bet * 2; 
@@ -457,6 +472,7 @@ public class CrapsGame implements GameInterface{
 
         int roll = rollDice();
         System.out.println("First roll for Come bet: " + roll);
+        addToHistory(roll, "Come-out for Come Bet");
 
         if (roll == 7 || roll == 11) {
             System.out.println("Come bet WINS on 7 or 11!");
@@ -473,6 +489,7 @@ public class CrapsGame implements GameInterface{
 
         int comePoint = roll;
         System.out.println("Come point is set to: " + comePoint + ". Hit it again before 7 to win.");
+        addToHistory(comePoint, "Come point established");
 
         while (true) {
             int nextRoll = rollDice();
@@ -481,10 +498,12 @@ public class CrapsGame implements GameInterface{
                 System.out.println("Come point hit! Come bet WINS.");
                 account.creditAccount(bet * 2);
                 printBalance(account);
+                addToHistory(nextRoll, "Come point HIT! WIN");
                 return;
             } else if (nextRoll == 7) {
                 System.out.println("Seven out. Come bet loses.");
                 printBalance(account);
+                addToHistory(nextRoll, "Seven-out on Come Bet");
                 return;
             } else {
                 System.out.println("No decision, roll again...");
@@ -500,6 +519,7 @@ public class CrapsGame implements GameInterface{
 
         int roll = rollDice();
         System.out.println("First roll for Don't Come bet: " + roll);
+        addToHistory(roll, "Come-out for Don't Come Bet");
 
         if (roll == 7 || roll == 11) {
             System.out.println("7 or 11 on Don't Come. You LOSE.");
@@ -523,6 +543,7 @@ public class CrapsGame implements GameInterface{
 
         int dontComePoint = roll;
         System.out.println("Don't Come point is set to: " + dontComePoint + ". 7 before point to win.");
+        addToHistory(dontComePoint, "Don't Come point established");
 
         while (true) {
             int nextRoll = rollDice();
@@ -531,10 +552,12 @@ public class CrapsGame implements GameInterface{
                 System.out.println("Seven out! Don't Come WINS.");
                 account.creditAccount(bet * 2);
                 printBalance(account);
+                addToHistory(nextRoll, "Seven-out! Don't Come WIN");
                 return;
             } else if (nextRoll == dontComePoint) {
                 System.out.println("Point hit. Don't Come loses.");
                 printBalance(account);
+                addToHistory(nextRoll, "Point hit. Don't Come LOSE");
                 return;
             } else {
                 System.out.println("No decision, roll again...");
@@ -555,17 +578,21 @@ public class CrapsGame implements GameInterface{
         System.out.printf("%s places $%.2f on %d.%n", player.getName(), bet, targetNumber);
         System.out.println("Rolling until " + targetNumber + " (win) or 7 (lose).");
 
+        addToHistory(targetNumber, "Place bet started");
+
         while (true) {
             int roll = rollDice();
             System.out.println("You rolled: " + roll);
 
             if (roll == targetNumber) {
+                addToHistory(roll, "Place bet WIN on " + roll);
                 double win = calculatePlaceBetWin(targetNumber, bet);
                 System.out.printf("You hit %d! Place bet wins with appropriate odds.%n", targetNumber);
                 account.creditAccount(bet + win);
                 printBalance(account);
                 return;
             } else if (roll == 7) {
+                addToHistory(roll, "Seven-out on Place Bet");
                 System.out.println("Seven out. Place bet loses.");
                 printBalance(account);
                 return;
@@ -574,6 +601,27 @@ public class CrapsGame implements GameInterface{
             }
         }
     }
+
+    private void addToHistory(int roll, String outcome) {
+        String entry = "Roll: " + roll + " (" + outcome + ")";
+        rollHistory.add(0, entry);
+
+        if (rollHistory.size() > 5) {
+            rollHistory.remove(rollHistory.size() - 1);
+        }
+    }
+
+    private void printRollHistory() {
+    if (rollHistory.isEmpty()) {
+        return;
+    }
+
+    System.out.println("------ RECENT ROLLS ------");
+    for (String entry : rollHistory) {
+        System.out.println(entry);
+    }
+    System.out.println("--------------------------\n");
+}
 
       private double calculatePassOddsWin(int point, double oddsBet) {
         switch (point) {
@@ -639,7 +687,7 @@ public class CrapsGame implements GameInterface{
             int sum = die1 + die2;
 
             printDice(die1, die2, sum);
-
+            printRollHistory(); 
             return sum;
         }
 
