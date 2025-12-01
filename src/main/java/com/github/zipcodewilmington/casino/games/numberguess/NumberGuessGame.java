@@ -152,6 +152,7 @@ public class NumberGuessGame implements GameInterface {
         }
 
         this.secretNumber = (int)(Math.random() * maxRange) + 1;
+        
 
         System.out.println("I'm thinking of a number between 1 and " + maxRange + "...");
         System.out.println("You have " + maxAttempts + " attempts. ");
