@@ -29,7 +29,6 @@ public class CrapsGame implements GameInterface{
     private Integer currentPoint = null;
     private final List<String> rollHistory = new ArrayList<>();
 
-    
     public CrapsGame() {
         this(new Scanner(System.in));
     }
@@ -38,7 +37,7 @@ public class CrapsGame implements GameInterface{
         this.scanner = scanner;
     }
 
-     @Override
+    @Override
     public void add(PlayerInterface player) {
         if (!(player instanceof CrapsPlayer)) {
             throw new IllegalArgumentException("CrapsGame only supports CrapsPlayer.");
@@ -140,16 +139,16 @@ public class CrapsGame implements GameInterface{
     }
 
     private void printIntroBanner() {
-    System.out.println(
-            "\n" +
-            "============================================================\n" +
-            "                   WELCOME TO THE CRAPS TABLE               \n" +
-            "------------------------------------------------------------\n" +
-            "               Roll the dice. Make your bets.               \n" +
-            "                  Good luck, shooter!                       \n" +
-            "============================================================\n"
-    );
-}
+        System.out.println(
+                "\n" +
+                "============================================================\n" +
+                "                   WELCOME TO THE CRAPS TABLE               \n" +
+                "------------------------------------------------------------\n" +
+                "               Roll the dice. Make your bets.               \n" +
+                "                  Good luck, shooter!                       \n" +
+                "============================================================\n"
+        );
+    }
 
     private BetType promptForBetType() {
         while (true) {
@@ -187,8 +186,48 @@ public class CrapsGame implements GameInterface{
 
     private Double promptForBet(CasinoAccount account) {
         while (true) {
-            System.out.printf("Enter your bet amount (or 'q' to leave table): ");
+            System.out.println("Choose your chip:");
+            System.out.println(" 1) $5");
+            System.out.println(" 2) $25");
+            System.out.println(" 3) $100");
+            System.out.println(" 4) Custom amount");
+            System.out.println(" 5) Quit betting (leave table)");
 
+            String input = scanner.nextLine().trim().toLowerCase();
+
+            double chosenAmount = 0;
+
+            switch (input) {
+                case "1":
+                    chosenAmount = 5;
+                    break;
+                case "2":
+                    chosenAmount = 25;
+                    break;
+                case "3":
+                    chosenAmount = 100;
+                    break;
+                case "4":
+                    return promptForCustomBet(account);
+                case "5":
+                case "q":
+                case "quit":
+                    return null;
+                default:
+                    System.out.println("Invalid selection. Please enter 1–5.");
+                    continue;
+            }
+            if (chosenAmount > account.getAccountBalance()) {
+                System.out.println("You cannot bet more than your current balance.");
+                continue;
+            }
+            return chosenAmount;
+        }
+    }
+
+    private Double promptForCustomBet(CasinoAccount account) {
+        while (true) {
+            System.out.print("Enter custom bet amount (or 'q' to cancel): ");
             String input = scanner.nextLine().trim().toLowerCase();
 
             if (input.equals("q") || input.equals("quit")) {
@@ -197,6 +236,7 @@ public class CrapsGame implements GameInterface{
 
             try {
                 double bet = Double.parseDouble(input);
+
                 if (bet <= 0) {
                     System.out.println("Bet must be greater than 0.");
                 } else if (bet > account.getAccountBalance()) {
@@ -204,8 +244,9 @@ public class CrapsGame implements GameInterface{
                 } else {
                     return bet;
                 }
+
             } catch (NumberFormatException e) {
-                System.out.println("Invalid number. Please enter a numeric bet.");
+                System.out.println("Invalid number. Please enter a numeric amount.");
             }
         }
     }
@@ -455,7 +496,7 @@ public class CrapsGame implements GameInterface{
             System.out.println("12 rolled! Field pays 3:1.");
             account.creditAccount(bet + win);
         } else if (roll == 3 || roll == 4 || roll == 9 || roll == 10 || roll == 11) {
-            System.out.println("Field wins! Pays 1:1.");
+            System.out.println("Field WIN! Pays 1:1.");
             account.creditAccount(bet * 2);
         } else {
             System.out.println("Field loses.");
