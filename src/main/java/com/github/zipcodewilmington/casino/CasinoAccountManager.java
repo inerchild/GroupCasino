@@ -1,6 +1,12 @@
 package com.github.zipcodewilmington.casino;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Created by leon on 7/21/2020.
@@ -42,5 +48,32 @@ public class CasinoAccountManager {
      */
     public void registerAccount(CasinoAccount casinoAccount) {
         casinoAccounts.add(casinoAccount);
+    }
+
+    public void loadAccounts(String filename) {
+        ObjectMapper mapper = new ObjectMapper();
+        File jsonFile = new File(filename);
+        try {
+            List<CasinoAccount> accounts = mapper.readValue(
+                    jsonFile,
+                    new TypeReference<List<CasinoAccount>>() {}
+            );
+
+            casinoAccounts.addAll(accounts);
+        } catch (IOException e) {
+            System.err.println("Failed to load accounts from JSON file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void saveAccounts(String filename) {
+        ObjectMapper mapper = new ObjectMapper();
+        File jsonFile = new File(filename);
+        try {
+            mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile, casinoAccounts);
+        } catch (IOException e) {
+            System.err.println("Failed to save accounts to JSON file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
