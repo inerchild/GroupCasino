@@ -684,18 +684,18 @@ public class CrapsGame implements GameInterface{
     }
 
     private void printRollHistory() {
-    if (rollHistory.isEmpty()) {
-        return;
+        if (rollHistory.isEmpty()) {
+            return;
+        }
+
+        System.out.println("------ RECENT ROLLS ------");
+        for (String entry : rollHistory) {
+            System.out.println(entry);
+        }
+        System.out.println("--------------------------\n");
     }
 
-    System.out.println("------ RECENT ROLLS ------");
-    for (String entry : rollHistory) {
-        System.out.println(entry);
-    }
-    System.out.println("--------------------------\n");
-}
-
-      private double calculatePassOddsWin(int point, double oddsBet) {
+    private double calculatePassOddsWin(int point, double oddsBet) {
         switch (point) {
             case 4:
             case 10:
@@ -751,111 +751,111 @@ public class CrapsGame implements GameInterface{
         }
     }
         
-        protected int rollDice() {
-            showRollingAnimation();
+    protected int rollDice() {
+        showRollingAnimation();
 
-            int die1 = random.nextInt(6) + 1;
-            int die2 = random.nextInt(6) + 1;
-            int sum = die1 + die2;
+        int die1 = random.nextInt(6) + 1;
+        int die2 = random.nextInt(6) + 1;
+        int sum = die1 + die2;
 
-            printDice(die1, die2, sum);
-            printRollHistory(); 
-            return sum;
+        printDice(die1, die2, sum);
+        printRollHistory(); 
+        return sum;
+    }
+
+    private void printDice(int d1, int d2, int sum) {
+        String[] die1Lines = diceFace(d1).split("\n");
+        String[] die2Lines = diceFace(d2).split("\n");
+
+        System.out.println();
+        printHeader("ROLL");
+
+
+        for (int i = 0; i < die1Lines.length; i++) {
+            System.out.println(die1Lines[i] + "   " + die2Lines[i]);
         }
 
-        private void printDice(int d1, int d2, int sum) {
-            String[] die1Lines = diceFace(d1).split("\n");
-            String[] die2Lines = diceFace(d2).split("\n");
+        System.out.println("Total: " + sum + "\n");
+        System.out.print("Press ENTER to continue...");
+        scanner.nextLine();
+        System.out.println();
+    }
 
-            System.out.println();
-            printHeader("ROLL");
+    private void showRollingAnimation() {
+        try {
+            String[] frames = { "Rolling.", "Rolling..", "Rolling..." };
 
-
-            for (int i = 0; i < die1Lines.length; i++) {
-                System.out.println(die1Lines[i] + "   " + die2Lines[i]);
+            for (String frame : frames) {
+                System.out.print("\r" + frame);
+                Thread.sleep(200);  
             }
 
-            System.out.println("Total: " + sum + "\n");
-            System.out.print("Press ENTER to continue...");
-            scanner.nextLine();
-            System.out.println();
+            System.out.print("\r"); 
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
+    }
 
-        private void showRollingAnimation() {
-            try {
-                String[] frames = { "Rolling.", "Rolling..", "Rolling..." };
-
-                for (String frame : frames) {
-                    System.out.print("\r" + frame);
-                    Thread.sleep(200);  
-                }
-
-                System.out.print("\r"); 
-
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+    private String diceFace(int n) {
+        switch (n) {
+            case 1:
+                return  "┌─────┐\n" +
+                        "│     │\n" +
+                        "│  ●  │\n" +
+                        "│     │\n" +
+                        "└─────┘";
+            case 2:
+                return  "┌─────┐\n" +
+                        "│●    │\n" +
+                        "│     │\n" +
+                        "│    ●│\n" +
+                        "└─────┘";
+            case 3:
+                return  "┌─────┐\n" +
+                        "│●    │\n" +
+                        "│  ●  │\n" +
+                        "│    ●│\n" +
+                        "└─────┘";
+            case 4:
+                return  "┌─────┐\n" +
+                        "│●   ●│\n" +
+                        "│     │\n" +
+                        "│●   ●│\n" +
+                        "└─────┘";
+            case 5:
+                return  "┌─────┐\n" +
+                        "│●   ●│\n" +
+                        "│  ●  │\n" +
+                        "│●   ●│\n" +
+                        "└─────┘";
+            case 6:
+                return  "┌─────┐\n" +
+                        "│●   ●│\n" +
+                        "│●   ●│\n" +
+                        "│●   ●│\n" +
+                        "└─────┘";
+            default:
+                return "";
         }
-
-        private String diceFace(int n) {
-            switch (n) {
-                case 1:
-                    return  "┌─────┐\n" +
-                            "│     │\n" +
-                            "│  ●  │\n" +
-                            "│     │\n" +
-                            "└─────┘";
-                case 2:
-                    return  "┌─────┐\n" +
-                            "│●    │\n" +
-                            "│     │\n" +
-                            "│    ●│\n" +
-                            "└─────┘";
-                case 3:
-                    return  "┌─────┐\n" +
-                            "│●    │\n" +
-                            "│  ●  │\n" +
-                            "│    ●│\n" +
-                            "└─────┘";
-                case 4:
-                    return  "┌─────┐\n" +
-                            "│●   ●│\n" +
-                            "│     │\n" +
-                            "│●   ●│\n" +
-                            "└─────┘";
-                case 5:
-                    return  "┌─────┐\n" +
-                            "│●   ●│\n" +
-                            "│  ●  │\n" +
-                            "│●   ●│\n" +
-                            "└─────┘";
-                case 6:
-                    return  "┌─────┐\n" +
-                            "│●   ●│\n" +
-                            "│●   ●│\n" +
-                            "│●   ●│\n" +
-                            "└─────┘";
-                default:
-                    return "";
-            }
-        }
+    }
 
     private void printBalance(CasinoAccount account) {
         System.out.printf("New balance: $%.2f%n", account.getAccountBalance());
     }
 
     private void printCrapsTable() {
-    printHeader("CRAPS TABLE");
+        printHeader("CRAPS TABLE");
 
-    System.out.println(
-            "| PASS LINE | COME | FIELD | DON'T PASS | PLACE BETS         |\n" +
-            "--------------------------------------------------------------\n" +
-            "| Field: Wins on 2,3,4,9,10,11 (2 pays 2:1, 12 pays 3:1)     |\n" +
-            "| Pass Line: Win on 7/11, Lose on 2/3/12, otherwise point    |\n" +
-            "| Place Bets: Choose numbers 4,5,6,8,9,10                    |\n"
-    );
+        System.out.println(
+                "| PASS LINE | COME | FIELD | DON'T PASS | PLACE BETS         |\n" +
+                "--------------------------------------------------------------\n" +
+                "| Field: Wins on 2,3,4,9,10,11 (2 pays 2:1, 12 pays 3:1)     |\n" +
+                "| Pass Line: Win on 7/11, Lose on 2/3/12, otherwise point    |\n" +
+                "| Place Bets: Choose numbers 4,5,6,8,9,10                    |\n"
+        );
 
-    printHeader("POINT STATUS");
-    printPointStatus();
-}
+        printHeader("POINT STATUS");
+        printPointStatus();
+    }
 }
