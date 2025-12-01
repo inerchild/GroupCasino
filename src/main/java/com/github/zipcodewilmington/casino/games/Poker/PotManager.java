@@ -45,45 +45,17 @@ public class PotManager {
 
     public void collectBets(List<PokerPlayer> players) {
 
-        List<PokerPlayer> activePlayers = new ArrayList<>();
-        for (PokerPlayer player : players) {
-            if (!player.isFolded() && player.getTotalBet() > 0) {
-                activePlayers.add(player);
+        Pot mainPot = pots.get(0);
+                
+            for (PokerPlayer player : players) {
+                if (player.getTotalBet() > 0) {
+                    mainPot.addAmount(player.getTotalBet());
+
+                    if (!player.isFolded()) {
+                        mainPot.addEligiblePlayer(player);
+                }
             }
         }
-
-        if (activePlayers.isEmpty()) {
-            return;
-        }
-
-        activePlayers.sort((p1, p2) -> Double.compare(p1.getTotalBet(), p2.getTotalBet()));
-
-        double previousBetLevel = 0;
-
-        for (int i = 0; i < activePlayers.size(); i++) {
-            PokerPlayer currentPlayer = activePlayers.get(i);
-            double currentBetLevel = currentPlayer.getTotalBet();
-
-            if (currentBetLevel > previousBetLevel) {
-                double amountPerPlayer = currentBetLevel - previousBetLevel;
-
-            Pot pot = (i == 0) ? pots.get(0) : createSidePot();
-
-            for (int j = i; j < activePlayers.size(); j++) {
-                PokerPlayer player = activePlayers.get(j);
-                pot.addAmount(amountPerPlayer);
-                pot.addEligiblePlayer(player);
-            }
-
-            previousBetLevel = currentBetLevel;
-            }
-        }
-    }
-
-    private Pot createSidePot() {
-        Pot sidePot = new Pot();
-        pots.add(sidePot);
-        return sidePot;
     }
 
     public void awardPot(int potIndex, List<PokerPlayer> winners) {
