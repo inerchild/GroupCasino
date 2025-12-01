@@ -82,6 +82,15 @@ public class PokerGame implements GameInterface {
         int minPlayers = 3 + (int)(Math.random() * 3);
         int npcsNeeded = Math.max(0, minPlayers - players.size());
 
+        String[] npcNames = {
+            "AggroBot", "BluffMaster", "The Shark", "Chip Leader",
+            "CheapoBot", "Mr. Fold", "The Rock", "Tight Eddie",
+            "WildCardBot", "Crazy Carl", "Random Randy", "The Gambler",
+            "All-In Annie", "Call Station", "Big Blind Bob", "The Professor"
+        };
+        
+        List<String> usedNames = new ArrayList<>();
+
         for (int i = 0; i < npcsNeeded; i++) {
             NPCPlayer.Personality personality;
             String name;
@@ -89,17 +98,19 @@ public class PokerGame implements GameInterface {
             switch (i % 3) {
                 case 0:
                     personality = NPCPlayer.Personality.AGGRESSIVE;
-                    name = "Moneybags McCash";
                     break;
                 case 1:
                     personality = NPCPlayer.Personality.CONSERVATIVE;
-                    name = "Cheapskate Jones";
                     break;
                 default:
                     personality = NPCPlayer.Personality.RANDOM;
-                    name = "John Poker";
                     break;
             }
+            do {
+                name = npcNames[(int)(Math.random() * npcNames.length)];
+            } while (usedNames.contains(name));
+            
+            usedNames.add(name);
             players.add(new NPCPlayer(name + " " + (i + 1), personality));
         }
         console.println("Players in game: " + players.size());
@@ -121,11 +132,10 @@ public class PokerGame implements GameInterface {
         }
 
         postBlinds();
-
         dealHoleCards();
 
-        console.println("\n--- PRE-FLOP ---");
-        showPlayerHand();
+        TableRenderer.renderMessage("PRE-FLOP");
+        showTable();
         bettingRound.runBettingRound(players, potManager);
 
         if (isHandOver()) {
@@ -133,11 +143,10 @@ public class PokerGame implements GameInterface {
             return;
         }
 
-        console.println("\n--- FLOP ---");
-        deck.drawCard();
+        TableRenderer.renderMessage("FLOP");
+        deck.drawCard(); 
         dealCommunityCards(3);
-        showCommunityCards();
-        showPlayerHand();
+        showTable();
         bettingRound.reset();
         bettingRound.runBettingRound(players, potManager);
 
@@ -146,11 +155,10 @@ public class PokerGame implements GameInterface {
             return;
         }
 
-        console.println("\n--- TURN ---");
-        deck.drawCard();
+        TableRenderer.renderMessage("TURN");
+        deck.drawCard(); 
         dealCommunityCards(1);
-        showCommunityCards();
-        showPlayerHand();
+        showTable();
         bettingRound.reset();
         bettingRound.runBettingRound(players, potManager);
 
@@ -159,15 +167,15 @@ public class PokerGame implements GameInterface {
             return;
         }
 
-        console.println("\n--- RIVER ---");
-        deck.drawCard();
+        TableRenderer.renderMessage("RIVER");
+        deck.drawCard(); 
         dealCommunityCards(1);
-        showCommunityCards();
-        showPlayerHand();
+        showTable();
         bettingRound.reset();
         bettingRound.runBettingRound(players, potManager);
 
-        console.println("\n--- SHOWDOWN ---");
+        TableRenderer.renderMessage("SHOWDOWN");
+        showTable();
         endHand();
     }
 
@@ -209,27 +217,19 @@ public class PokerGame implements GameInterface {
         }
     }
 
-    private void showCommunityCards() {
-        console.println("\nCommunity Cards:");
-        for (Card card : communityCards) {
-            console.println(" " + card);
+    private void showTable() {
+        PokerPlayer humanPlayer = getHumanPlayer();
+            if (humanPlayer != null) {
+                TableRenderer.renderTable(
+                    players, 
+                    communityCards, 
+                    getCurrentPotSize(),
+                    bettingRound.getCurrentBet(), 
+                    humanPlayer
+            );
         }
     }
 
-    private void showPlayerHand() {
-        for (PokerPlayer player : players) {
-            if (!(player instanceof NPCPlayer)) {
-            console.println("\nYour Hand:");
-            for (Card card : player.getHand().getHoleCards()) {
-                console.println(" " + card);
-            }
-            if (player.getHand().getAllCards().size() >= 5) {
-                HandRank bestHand = player.getHand().getBestHand();
-                console.println("Your best hand: " + bestHand.getDescription());
-                }
-            }
-        }
-    }
 
     private boolean isHandOver() {
         int activePlayers = 0;
@@ -242,7 +242,7 @@ public class PokerGame implements GameInterface {
     }
 
     private void endHand() {
-        potManager.collectBets(players);
+        potManager.collectBets(players); 
 
         console.println("\n" + potManager.toString());
 
@@ -304,5 +304,24 @@ public class PokerGame implements GameInterface {
 
     private void eliminateBrokePlayers() {
         players.removeIf(player -> !player.hasChips());
+    }
+
+    private PokerPlayer getHumanPlayer() {
+        for (PokerPlayer player : players) {
+            if (!(player instanceof NPCPlayer)) {
+                return player;
+            }
+        }
+        return players.isEmpty() ? null : players.get(0);
+    }
+
+    private double getCurrentPotSize() {
+        double total = potManager.getTotalPotSize();
+        
+        for (PokerPlayer player : players) {
+            total += player.getTotalBet();
+        }
+        
+        return total;
     }
 }

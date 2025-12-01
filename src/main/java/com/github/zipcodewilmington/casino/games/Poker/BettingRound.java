@@ -12,46 +12,55 @@ public class BettingRound {
     private double minimumRaise;
     private final double smallBlind;
 
-    public BettingRound(double smallBlind) {
+    public BettingRound(double smallBlind) {                    // creates the betting round, creates the small blind and min raise (and makes things purple)
         this.console = new IOConsole(AnsiColor.PURPLE);
         this.currentBet = 0;
         this.minimumRaise = smallBlind * 2;
         this.smallBlind = smallBlind;
     }
 
-    public void runBettingRound(List<PokerPlayer> players, PotManager potManager) {
+    public void runBettingRound(List<PokerPlayer> players, PotManager potManager, int startIndex) { 
+
         for (PokerPlayer player : players) {
             player.resetCurrentBet();
-        }
-
+    }
         boolean bettingComplete = false;
+        int roundCount = 0;
 
         while (!bettingComplete) {
             bettingComplete = true;
 
-            for (PokerPlayer player : players) {
+            for (int i = 0; i < players.size(); i++) {
+
+            PokerPlayer player = players.get((startIndex + i) % players.size());
+
                 if (player.isFolded() || player.isAllIn()) {
                     continue;
                 }
 
-                if (player.getCurrentBet() < currentBet || currentBet == 0) {
+                if (player.getCurrentBet() < currentBet || roundCount == 0) { // if the players bet is smaller than current bet, asks to call
                     PlayerAction action = getPlayerAction(player, potManager);
                     processAction(player, action, potManager);
 
-                    if (action == PlayerAction.RAISE) {
+                    if (action == PlayerAction.RAISE) {                     // if you raise again, keep it going
                         bettingComplete = false;
                     }
                 }
             }
+            roundCount++;
 
-            int activePlayers = countActivePlayers(players);
+            int activePlayers = countActivePlayers(players);            // if there's only one player left, end the hand
             if (activePlayers <= 1) {
                 break;
             }
         }
     }
 
-    private PlayerAction getPlayerAction(PokerPlayer player, PotManager potManager) {
+    public void runBettingRound(List<PokerPlayer> players, PotManager potManager) {
+        runBettingRound(players, potManager, 0);
+    }
+
+    private PlayerAction getPlayerAction(PokerPlayer player, PotManager potManager) {           // get the player actions
         if (player instanceof NPCPlayer) {
             NPCPlayer npc = (NPCPlayer) player;
             return npc.makeDecision(currentBet, potManager.getTotalPotSize());
@@ -60,7 +69,7 @@ public class BettingRound {
         }
     }
 
-    private PlayerAction getHumanPlayerAction(PokerPlayer player) {
+    private PlayerAction getHumanPlayerAction(PokerPlayer player) {                         // get human actions
 
         console.println("\n" + player.getName() + "'s turn");
         console.println("Your balance: $" + String.format("%.2f", player.getBalance()));
@@ -74,7 +83,7 @@ public class BettingRound {
             options.append("[C]heck, [R]aise, [F]old, [A]ll-in");
         } else {
             options.append("[F]old");
-            if (amountToCall > 0 && amountToCall < player.getBalance()) {
+            if (amountToCall > 0 && amountToCall < player.getBalance()) {                   // if your bet is lower than others, asks to call
                 options.append(", [C]all $").append(String.format("%.2f", amountToCall));
             }
             if (player.getBalance() > amountToCall) {
